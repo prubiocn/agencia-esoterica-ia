@@ -100,10 +100,10 @@ const agents = [
 ];
 
 const plans = [
-  { id: 'free', name: 'Prueba Gratuita', credits: 30, price: 0, color: 'from-gray-600 to-gray-700' },
-  { id: 'basic', name: 'Básico', credits: 100, price: 9.99, color: 'from-blue-600 to-cyan-600' },
-  { id: 'mystic', name: 'Místico', credits: 250, price: 19.99, color: 'from-purple-600 to-pink-600', popular: true },
-  { id: 'master', name: 'Maestro', credits: 600, price: 39.99, color: 'from-amber-600 to-orange-600' }
+  { id: 'free', name: 'Prueba Gratuita', credits: 30, price: 0, currency: '€', color: 'from-gray-600 to-gray-700' },
+  { id: 'basic', name: 'Básico', credits: 100, price: 9.99, currency: '€', color: 'from-blue-600 to-cyan-600' },
+  { id: 'mystic', name: 'Místico', credits: 250, price: 19.99, currency: '€', color: 'from-purple-600 to-pink-600', popular: true },
+  { id: 'master', name: 'Maestro', credits: 600, price: 39.99, currency: '€', color: 'from-amber-600 to-orange-600' }
 ];
 
 export default function Home() {
@@ -379,5 +379,6 @@ export default function Home() {
   );
 
 }
+
 
 
