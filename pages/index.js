@@ -183,15 +183,35 @@ export default function Home() {
     }
   };
 
-  const handlePurchasePlan = (plan) => {
-    if (plan.id === 'free') return;
-    if (confirm(`🔮 Confirmar:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: $${plan.price}\n\n(Simulación)`)) {
-      setUserCredits(prev => prev + plan.credits);
-      setUserPlan(plan.id);
-      alert(`✨ ¡Pago exitoso! Recibiste ${plan.credits} créditos.`);
-      setView('home');
-    }
+  const handlePurchasePlan = async (plan) => {
+  if (plan.id === 'free') return;
+  
+  // IDs de precios de Stripe (reemplaza con tus Price IDs reales)
+  const priceIds = {
+    basic: 'price_1ShEOlHSk5msGrAyGX7Yu9L4',
+    mystic: 'price_1ShEWRHSk5msGrAyTwP1zwJs',
+    master: 'price_1ShEYUHSk5msGrAy6s6z5ssY'
   };
+  
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId: priceIds[plan.id],
+        planName: plan.name
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch (error) {
+    alert('Error al procesar el pago. Intenta de nuevo.');
+  }
+};
 
   return (
     <>
@@ -359,4 +379,5 @@ export default function Home() {
   );
 
 }
+
 
