@@ -183,15 +183,20 @@ export default function Home() {
     }
   };
 
-  const handlePurchasePlan = async (plan) => {
+  const handlePurchasePlan = (plan) => {
   if (plan.id === 'free') return;
   
-  // IDs de precios de Stripe (reemplaza con tus Price IDs reales)
-  const priceIds = {
-    basic: 'price_1ShEOlHSk5msGrAyGX7Yu9L4',
-    mystic: 'price_1ShEWRHSk5msGrAyTwP1zwJs',
-    master: 'price_1ShEYUHSk5msGrAy6s6z5ssY'
-  };
+  const confirmed = window.confirm(
+    `🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n(Esta es una demostración - no se cobrará dinero real)`
+  );
+  
+  if (confirmed) {
+    setUserCredits(prev => prev + plan.credits);
+    setUserPlan(plan.id);
+    alert(`✨ ¡Recarga exitosa!\n\nHas recibido ${plan.credits} créditos místicos.\nNuevo saldo: ${userCredits + plan.credits} créditos`);
+    setView('home');
+  }
+};
   
   try {
     const response = await fetch('/api/create-checkout', {
@@ -379,6 +384,7 @@ export default function Home() {
   );
 
 }
+
 
 
 
