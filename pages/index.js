@@ -296,7 +296,7 @@ export default function Home() {
                     {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2"><span className="bg-gradient-to-r from-amber-400 to-orange-400 text-black text-xs font-bold px-3 py-1 rounded-full">MÁS POPULAR</span></div>}
                     <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${plan.color} flex items-center justify-center`}><Sparkles className="w-8 h-8 text-white" /></div>
                     <h3 className="text-2xl font-bold text-white text-center mb-2">{plan.name}</h3>
-                    <div className="text-center mb-4"><span className="text-4xl font-bold text-white">${plan.price}</span>{plan.price > 0 && <span className="text-purple-300">/mes</span>}</div>
+                    <div className="text-center mb-4"><span className="text-4xl font-bold text-white">{plan.price === 0 ? '€0' : `€${plan.price}`}</span>{plan.price > 0 && <span className="text-purple-300">/mes</span>}</div>
                     <div className="bg-slate-700 rounded-lg p-3 mb-4"><div className="flex items-center justify-center gap-2 text-amber-400"><Coins className="w-5 h-5" /><span className="text-xl font-bold">{plan.credits} créditos</span></div></div>
                     <button onClick={() => handlePurchasePlan(plan)} disabled={plan.id === 'free'} className={`w-full py-3 rounded-lg font-bold ${plan.id === 'free' ? 'bg-slate-600 text-slate-400 cursor-not-allowed' : plan.popular ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black' : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'}`}>{plan.id === 'free' ? 'Plan Actual' : 'Comprar'}</button>
                   </div>
@@ -379,6 +379,7 @@ export default function Home() {
   );
 
 }
+
 
 
 
