@@ -1024,28 +1024,60 @@ const exportToPDF = (consultation, fullResponse) => {
   );
 
   const renderHistory = () => (
-    <div>
-      <h2 className="text-2xl font-semibold text-white mb-6">Historial de Consultas</h2>
-      {consultationHistory.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-12 text-center border border-purple-500">
-          <History className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-          <p className="text-purple-300">No has realizado consultas aún</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {consultationHistory.map((item) => (
-            <div key={item.id} className="bg-slate-800 rounded-xl p-4 border border-purple-500">
-              <div className="flex justify-between items-start mb-2">
-                <div><h3 className="text-white font-bold">{item.agent}</h3><p className="text-purple-300 text-sm">{item.timestamp}</p></div>
-                <div className="flex items-center gap-1 text-amber-400"><Coins className="w-4 h-4" /><span className="font-bold">{item.cost}</span></div>
+  <div>
+    <h2 className="text-2xl font-semibold text-white mb-6">Historial de Consultas</h2>
+    
+    {consultationHistory.length === 0 ? (
+      <div className="bg-slate-800 rounded-xl p-12 text-center border border-purple-500">
+        <History className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+        <p className="text-purple-300">No has realizado consultas aún</p>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {consultationHistory.map((item) => (
+          <div key={item.id} className="bg-slate-800 rounded-xl p-4 border border-purple-500">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1">
+                <h3 className="text-white font-bold">{item.agent}</h3>
+                <p className="text-purple-300 text-sm">{item.timestamp}</p>
               </div>
-              <p className="text-purple-200 text-sm">{item.question}</p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 text-amber-400">
+                  <Coins className="w-4 h-4" />
+                  <span className="font-bold">{item.cost}</span>
+                </div>
+                {/* BOTÓN DE EXPORTACIÓN */}
+                <button
+                  onClick={() => exportToPDF(item, item.response)}
+                  className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm rounded hover:from-purple-500 hover:to-pink-500 transition-all flex items-center gap-1"
+                  title="Exportar a PDF"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  PDF
+                </button>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+            <p className="text-purple-200 text-sm">{item.question}</p>
+            {item.response && (
+              <details className="mt-2">
+                <summary className="text-purple-400 text-xs cursor-pointer hover:text-purple-300">
+                  Ver respuesta completa
+                </summary>
+                <p className="text-purple-200 text-xs mt-2 pl-4 border-l-2 border-purple-500">
+                  {item.response.substring(0, 200)}...
+                </p>
+              </details>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
   const renderAdmin = () => (
     <div>
@@ -1145,6 +1177,7 @@ const exportToPDF = (consultation, fullResponse) => {
     </>
   );
 }
+
 
 
 
