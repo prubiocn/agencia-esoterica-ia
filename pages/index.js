@@ -732,17 +732,44 @@ export default function Home() {
     conversionRate: 33.9
   };
 
-  const handlePurchasePlan = (plan) => {
-    if (plan.id === 'free') return;
-    
-    if (window.confirm(`🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n⚠️ DEMOSTRACIÓN - No se cobrará dinero real`)) {
-      const newCredits = userCredits + plan.credits;
-      setUserCredits(newCredits);
-      setUserPlan(plan.id);
-      alert(`✨ ¡Recarga exitosa!\n\nRecibiste: ${plan.credits} créditos\nNuevo saldo: ${newCredits} créditos`);
-      setView('home');
-    }
+  const handlePurchasePlan = async (plan) => {
+  if (plan.id === 'free') return;
+  
+  // Price IDs de PRODUCCIÓN (modo LIVE)
+  const priceIds = {
+    basic: 'price_1ShRqICquwW5MsuaVd8aTacP',    // ← PEGA tu Price ID de producción
+    mystic: 'price_1ShRuoCquwW5MsuaJiR05wnZ',  // ← PEGA tu Price ID de producción
+    master: 'price_1ShRxGCquwW5MsuaYwWB1AjE'   // ← PEGA tu Price ID de producción
   };
+  
+  setLoading(true);
+  
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId: priceIds[plan.id],
+        planName: plan.name,
+        planCredits: plan.credits,
+        userEmail: null // Opcional: puedes pedir el email antes
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Error al iniciar el pago. Por favor, contacta con soporte.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al procesar el pago. Por favor, intenta de nuevo.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAgentSelect = (agent) => {
     if (userCredits < agent.cost) {
@@ -971,4 +998,5 @@ export default function Home() {
     </>
   );
 }
+
 
