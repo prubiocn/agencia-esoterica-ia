@@ -845,7 +845,8 @@ export default function Home() {
 
   const renderHome = () => (
     <div>
-      <h2 className="text-2xl font-semibold text-white mb-6 text-center">Selecciona tu Guía Espiritual</h2>
+      <h2 className="text-3xl font-bold text-white mb-4 text-center">Elige tu Camino Místico</h2>
+      <p className="text-purple-300 text-center mb-8">Invierte en tu transformación personal</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map((agent) => {
           const Icon = agent.icon;
@@ -1017,6 +1018,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
