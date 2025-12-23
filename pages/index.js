@@ -753,9 +753,9 @@ export default function Home() {
     
     // Price IDs de PRODUCCIÓN - Reemplaza con tus IDs reales
     const priceIds = {
-      basic: 'price_TU_PRICE_ID_BASICO',
-      mystic: 'price_TU_PRICE_ID_MISTICO',
-      master: 'price_TU_PRICE_ID_MAESTRO'
+      basic: 'price_1ShRqICquwW5MsuaVd8aTacP',
+      mystic: 'price_1ShRuoCquwW5MsuaJiR05wnZ',
+      master: 'price_1ShRxGCquwW5MsuaYwWB1AjE'
     };
     
     setLoading(true);
@@ -1020,3 +1020,4 @@ export default function Home() {
     </>
   );
 }
+
