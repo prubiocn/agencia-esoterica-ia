@@ -732,6 +732,20 @@ export default function Home() {
     conversionRate: 33.9
   };
 
+   React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const canceled = urlParams.get('canceled');
+    const sessionId = urlParams.get('session_id');
+    
+    if (success === 'true' && sessionId) {
+      alert(`✅ ¡Pago completado!\n\nGracias por tu suscripción.\nTus créditos se activarán en unos momentos.\n\nID de sesión: ${sessionId}`);
+      window.history.replaceState({}, document.title, '/');
+    } else if (canceled === 'true') {
+      alert('Pago cancelado. No se realizó ningún cargo.');
+      window.history.replaceState({}, document.title, '/');
+    }
+  }, []);
   const handlePurchasePlan = async (plan) => {
   if (plan.id === 'free') return;
   
@@ -998,6 +1012,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
