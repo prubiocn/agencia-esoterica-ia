@@ -125,6 +125,18 @@ export default function Home() {
     conversionRate: 33.9
   };
 
+  const handlePurchasePlan = (plan) => {
+    if (plan.id === 'free') return;
+    
+    if (window.confirm(`🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n⚠️ DEMO - No se cobrará`)) {
+      const newCredits = userCredits + plan.credits;
+      setUserCredits(newCredits);
+      setUserPlan(plan.id);
+      alert(`✨ ¡Recarga exitosa!\n\n+${plan.credits} créditos\nSaldo: ${newCredits} créditos`);
+      setView('home');
+    }
+  };
+
   const handleAgentSelect = (agent) => {
     if (userCredits < agent.cost) {
       alert('⚠️ No tienes suficientes créditos. Recarga para continuar tu viaje místico.');
@@ -183,22 +195,6 @@ export default function Home() {
     }
   };
 
-  const handlePurchasePlan = (plan) => {
-  if (plan.id === 'free') return;
-  
-  const confirmed = window.confirm(
-    `🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n⚠️ DEMO: No se cobrará dinero real.`
-  );
-  
-  if (confirmed) {
-    const newCredits = userCredits + plan.credits;
-    setUserCredits(newCredits);
-    setUserPlan(plan.id);
-    alert(`✨ ¡Recarga exitosa!\n\nRecibiste: ${plan.credits} créditos\nNuevo saldo: ${newCredits} créditos`);
-    setView('home');
-  }
-};
-  
   try {
     const response = await fetch('/api/create-checkout', {
       method: 'POST',
@@ -385,6 +381,7 @@ export default function Home() {
   );
 
 }
+
 
 
 
