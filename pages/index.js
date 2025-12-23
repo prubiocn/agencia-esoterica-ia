@@ -746,6 +746,127 @@ export default function Home() {
       window.history.replaceState({}, document.title, '/');
     }
   }, []);
+
+  // Función para exportar consulta a PDF
+const exportToPDF = (consultation, fullResponse) => {
+  // Importación dinámica de jsPDF
+  import('jspdf').then((jsPDFModule) => {
+    const { jsPDF } = jsPDFModule;
+    const doc = new jsPDF();
+    
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 20;
+    const maxWidth = pageWidth - (margin * 2);
+    let yPosition = margin;
+
+    // Fondo decorativo
+    doc.setFillColor(30, 27, 75); // Morado oscuro
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    // Logo/Título
+    doc.setTextColor(200, 150, 255); // Morado claro
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text('CambiaTuYo', pageWidth / 2, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text('Tu Portal Místico Digital', pageWidth / 2, 30, { align: 'center' });
+    
+    yPosition = 50;
+    
+    // Información de la consulta
+    doc.setTextColor(100, 50, 150); // Morado
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Consulta con ${consultation.agent}`, margin, yPosition);
+    
+    yPosition += 10;
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Fecha: ${consultation.timestamp}`, margin, yPosition);
+    
+    yPosition += 5;
+    doc.text(`Créditos utilizados: ${consultation.cost}`, margin, yPosition);
+    
+    yPosition += 15;
+    
+    // Línea separadora
+    doc.setDrawColor(150, 100, 200);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    
+    yPosition += 10;
+    
+    // Pregunta
+    doc.setFontSize(12);
+    doc.setTextColor(80, 40, 120);
+    doc.setFont(undefined, 'bold');
+    doc.text('Tu consulta:', margin, yPosition);
+    
+    yPosition += 7;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'normal');
+    
+    const questionLines = doc.splitTextToSize(consultation.question, maxWidth);
+    doc.text(questionLines, margin, yPosition);
+    yPosition += questionLines.length * 6 + 10;
+    
+    // Verificar espacio para respuesta
+    if (yPosition > pageHeight - 60) {
+      doc.addPage();
+      yPosition = margin;
+    }
+    
+    // Respuesta
+    doc.setFontSize(12);
+    doc.setTextColor(80, 40, 120);
+    doc.setFont(undefined, 'bold');
+    doc.text('Respuesta:', margin, yPosition);
+    
+    yPosition += 7;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'normal');
+    
+    const responseText = fullResponse || 'Respuesta no disponible';
+    const responseLines = doc.splitTextToSize(responseText, maxWidth);
+    
+    // Manejar múltiples páginas
+    responseLines.forEach((line, index) => {
+      if (yPosition > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+      doc.text(line, margin, yPosition);
+      yPosition += 5;
+    });
+    
+    // Footer
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `CambiaTuYo - cambiatuyo.es - Página ${i} de ${totalPages}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+    
+    // Descargar PDF
+    const fileName = `CambiaTuYo_${consultation.agent.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+    doc.save(fileName);
+  }).catch((error) => {
+    console.error('Error al generar PDF:', error);
+    alert('Error al generar el PDF. Por favor, intenta de nuevo.');
+  });
+};
   const handlePurchasePlan = async (plan) => {
   if (plan.id === 'free') return;
   
@@ -1018,6 +1139,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
