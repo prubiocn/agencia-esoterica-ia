@@ -921,48 +921,54 @@ const exportToPDF = (consultation, fullResponse) => {
   };
 
   const handleSendMessage = async () => {
-    if (!input.trim() || loading) return;
+  if (!input.trim() || loading) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setLoading(true);
-    setUserCredits(prev => prev - selectedAgent.cost);
+  const userMessage = { role: 'user', content: input };
+  setMessages(prev => [...prev, userMessage]);
+  const questionText = input; // Guardar la pregunta
+  setInput('');
+  setLoading(true);
+  setUserCredits(prev => prev - selectedAgent.cost);
 
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemPrompt: selectedAgent.systemPrompt,
+        messages: messages.filter(m => !m.content.includes('🌟')).concat(userMessage)
+      })
+    });
+
+    const data = await response.json();
+    const assistantMessage = {
+      role: 'assistant',
+      content: data.content[0].text
+    };
+    
+    setMessages(prev => [...prev, assistantMessage]);
+    
+    // ACTUALIZA ESTA PARTE: Guarda también la respuesta completa
     const consultation = {
       id: Date.now(),
       agent: selectedAgent.name,
-      question: input,
+      question: questionText,
+      response: data.content[0].text, // ← AÑADE ESTO
       cost: selectedAgent.cost,
       timestamp: new Date().toLocaleString()
     };
     setConsultationHistory(prev => [consultation, ...prev]);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemPrompt: selectedAgent.systemPrompt,
-          messages: messages.filter(m => !m.content.includes('🌟')).concat(userMessage)
-        })
-      });
-
-      const data = await response.json();
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: data.content[0].text
-      }]);
-    } catch (error) {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
-      }]);
-      setUserCredits(prev => prev + selectedAgent.cost);
-    } finally {
-      setLoading(false);
-    }
-  };
+    
+  } catch (error) {
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
+    }]);
+    setUserCredits(prev => prev + selectedAgent.cost);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const renderHome = () => (
     <div>
@@ -1139,6 +1145,7 @@ const exportToPDF = (consultation, fullResponse) => {
     </>
   );
 }
+
 
 
 
