@@ -983,8 +983,8 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <Sparkles className="w-8 h-8 text-purple-400" />
                 <div>
-                  <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Agencia Esotérica IA</h1>
-                  <p className="text-purple-300 text-sm">Portal místico digital</p>
+                  <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">CambiaTuYo</h1>
+                  <p className="text-purple-300 text-sm">Tu Portal Místico Digital</p>
                 </div>
               </div>
               
@@ -1017,6 +1017,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
