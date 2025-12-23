@@ -732,7 +732,8 @@ export default function Home() {
     conversionRate: 33.9
   };
 
-   React.useEffect(() => {
+  // Manejo de retorno desde Stripe
+  React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
     const canceled = urlParams.get('canceled');
@@ -747,164 +748,42 @@ export default function Home() {
     }
   }, []);
 
-  // Función para exportar consulta a PDF
-const exportToPDF = (consultation, fullResponse) => {
-  // Importación dinámica de jsPDF
-  import('jspdf').then((jsPDFModule) => {
-    const { jsPDF } = jsPDFModule;
-    const doc = new jsPDF();
-    
-    const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
-    const margin = 20;
-    const maxWidth = pageWidth - (margin * 2);
-    let yPosition = margin;
-
-    // Fondo decorativo
-    doc.setFillColor(30, 27, 75); // Morado oscuro
-    doc.rect(0, 0, pageWidth, 40, 'F');
-    
-    // Logo/Título
-    doc.setTextColor(200, 150, 255); // Morado claro
-    doc.setFontSize(24);
-    doc.setFont(undefined, 'bold');
-    doc.text('CambiaTuYo', pageWidth / 2, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'normal');
-    doc.text('Tu Portal Místico Digital', pageWidth / 2, 30, { align: 'center' });
-    
-    yPosition = 50;
-    
-    // Información de la consulta
-    doc.setTextColor(100, 50, 150); // Morado
-    doc.setFontSize(16);
-    doc.setFont(undefined, 'bold');
-    doc.text(`Consulta con ${consultation.agent}`, margin, yPosition);
-    
-    yPosition += 10;
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont(undefined, 'normal');
-    doc.text(`Fecha: ${consultation.timestamp}`, margin, yPosition);
-    
-    yPosition += 5;
-    doc.text(`Créditos utilizados: ${consultation.cost}`, margin, yPosition);
-    
-    yPosition += 15;
-    
-    // Línea separadora
-    doc.setDrawColor(150, 100, 200);
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    
-    yPosition += 10;
-    
-    // Pregunta
-    doc.setFontSize(12);
-    doc.setTextColor(80, 40, 120);
-    doc.setFont(undefined, 'bold');
-    doc.text('Tu consulta:', margin, yPosition);
-    
-    yPosition += 7;
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'normal');
-    
-    const questionLines = doc.splitTextToSize(consultation.question, maxWidth);
-    doc.text(questionLines, margin, yPosition);
-    yPosition += questionLines.length * 6 + 10;
-    
-    // Verificar espacio para respuesta
-    if (yPosition > pageHeight - 60) {
-      doc.addPage();
-      yPosition = margin;
-    }
-    
-    // Respuesta
-    doc.setFontSize(12);
-    doc.setTextColor(80, 40, 120);
-    doc.setFont(undefined, 'bold');
-    doc.text('Respuesta:', margin, yPosition);
-    
-    yPosition += 7;
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'normal');
-    
-    const responseText = fullResponse || 'Respuesta no disponible';
-    const responseLines = doc.splitTextToSize(responseText, maxWidth);
-    
-    // Manejar múltiples páginas
-    responseLines.forEach((line, index) => {
-      if (yPosition > pageHeight - margin) {
-        doc.addPage();
-        yPosition = margin;
-      }
-      doc.text(line, margin, yPosition);
-      yPosition += 5;
-    });
-    
-    // Footer
-    const totalPages = doc.internal.pages.length - 1;
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(
-        `CambiaTuYo - cambiatuyo.es - Página ${i} de ${totalPages}`,
-        pageWidth / 2,
-        pageHeight - 10,
-        { align: 'center' }
-      );
-    }
-    
-    // Descargar PDF
-    const fileName = `CambiaTuYo_${consultation.agent.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
-    doc.save(fileName);
-  }).catch((error) => {
-    console.error('Error al generar PDF:', error);
-    alert('Error al generar el PDF. Por favor, intenta de nuevo.');
-  });
-};
   const handlePurchasePlan = async (plan) => {
-  if (plan.id === 'free') return;
-  
-  // Price IDs de PRODUCCIÓN (modo LIVE)
-  const priceIds = {
-    basic: 'price_1ShRqICquwW5MsuaVd8aTacP',    // ← PEGA tu Price ID de producción
-    mystic: 'price_1ShRuoCquwW5MsuaJiR05wnZ',  // ← PEGA tu Price ID de producción
-    master: 'price_1ShRxGCquwW5MsuaYwWB1AjE'   // ← PEGA tu Price ID de producción
-  };
-  
-  setLoading(true);
-  
-  try {
-    const response = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        priceId: priceIds[plan.id],
-        planName: plan.name,
-        planCredits: plan.credits,
-        userEmail: null // Opcional: puedes pedir el email antes
-      })
-    });
+    if (plan.id === 'free') return;
     
-    const data = await response.json();
+    // Price IDs de PRODUCCIÓN - Reemplaza con tus IDs reales
+    const priceIds = {
+      basic: 'price_TU_PRICE_ID_BASICO',
+      mystic: 'price_TU_PRICE_ID_MISTICO',
+      master: 'price_TU_PRICE_ID_MAESTRO'
+    };
     
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert('Error al iniciar el pago. Por favor, contacta con soporte.');
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: priceIds[plan.id],
+          planName: plan.name,
+          planCredits: plan.credits
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Error al iniciar el pago.');
+      }
+    } catch (error) {
+      alert('Error al procesar el pago.');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error al procesar el pago. Por favor, intenta de nuevo.');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleAgentSelect = (agent) => {
     if (userCredits < agent.cost) {
@@ -921,59 +800,53 @@ const exportToPDF = (consultation, fullResponse) => {
   };
 
   const handleSendMessage = async () => {
-  if (!input.trim() || loading) return;
+    if (!input.trim() || loading) return;
 
-  const userMessage = { role: 'user', content: input };
-  setMessages(prev => [...prev, userMessage]);
-  const questionText = input; // Guardar la pregunta
-  setInput('');
-  setLoading(true);
-  setUserCredits(prev => prev - selectedAgent.cost);
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    const questionText = input;
+    setInput('');
+    setLoading(true);
+    setUserCredits(prev => prev - selectedAgent.cost);
 
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemPrompt: selectedAgent.systemPrompt,
-        messages: messages.filter(m => !m.content.includes('🌟')).concat(userMessage)
-      })
-    });
-
-    const data = await response.json();
-    const assistantMessage = {
-      role: 'assistant',
-      content: data.content[0].text
-    };
-    
-    setMessages(prev => [...prev, assistantMessage]);
-    
-    // ACTUALIZA ESTA PARTE: Guarda también la respuesta completa
     const consultation = {
       id: Date.now(),
       agent: selectedAgent.name,
       question: questionText,
-      response: data.content[0].text, // ← AÑADE ESTO
       cost: selectedAgent.cost,
       timestamp: new Date().toLocaleString()
     };
     setConsultationHistory(prev => [consultation, ...prev]);
-    
-  } catch (error) {
-    setMessages(prev => [...prev, {
-      role: 'assistant',
-      content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
-    }]);
-    setUserCredits(prev => prev + selectedAgent.cost);
-  } finally {
-    setLoading(false);
-  }
-};
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemPrompt: selectedAgent.systemPrompt,
+          messages: messages.filter(m => !m.content.includes('🌟')).concat(userMessage)
+        })
+      });
+
+      const data = await response.json();
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.content[0].text
+      }]);
+    } catch (error) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
+      }]);
+      setUserCredits(prev => prev + selectedAgent.cost);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderHome = () => (
     <div>
-      <h2 className="text-3xl font-bold text-white mb-4 text-center">Elige tu Camino Místico</h2>
-      <p className="text-purple-300 text-center mb-8">Invierte en tu transformación personal</p>
+      <h2 className="text-2xl font-semibold text-white mb-6 text-center">Selecciona tu Guía Espiritual</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map((agent) => {
           const Icon = agent.icon;
@@ -1007,7 +880,7 @@ const exportToPDF = (consultation, fullResponse) => {
   const renderPricing = () => (
     <div>
       <h2 className="text-3xl font-bold text-white mb-4 text-center">Elige tu Camino Místico</h2>
-      <p className="text-purple-300 text-center mb-8">Invierte en tu crecimiento espiritual</p>
+      <p className="text-purple-300 text-center mb-8">Invierte en tu transformación personal</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <div key={plan.id} className={`relative rounded-xl p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 ${plan.popular ? 'border-amber-400' : 'border-purple-500'}`}>
@@ -1024,60 +897,34 @@ const exportToPDF = (consultation, fullResponse) => {
   );
 
   const renderHistory = () => (
-  <div>
-    <h2 className="text-2xl font-semibold text-white mb-6">Historial de Consultas</h2>
-    
-    {consultationHistory.length === 0 ? (
-      <div className="bg-slate-800 rounded-xl p-12 text-center border border-purple-500">
-        <History className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-        <p className="text-purple-300">No has realizado consultas aún</p>
-      </div>
-    ) : (
-      <div className="space-y-4">
-        {consultationHistory.map((item) => (
-          <div key={item.id} className="bg-slate-800 rounded-xl p-4 border border-purple-500">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1">
-                <h3 className="text-white font-bold">{item.agent}</h3>
-                <p className="text-purple-300 text-sm">{item.timestamp}</p>
-              </div>
-              <div className="flex items-center gap-3">
+    <div>
+      <h2 className="text-2xl font-semibold text-white mb-6">Historial de Consultas</h2>
+      {consultationHistory.length === 0 ? (
+        <div className="bg-slate-800 rounded-xl p-12 text-center border border-purple-500">
+          <History className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+          <p className="text-purple-300">No has realizado consultas aún</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {consultationHistory.map((item) => (
+            <div key={item.id} className="bg-slate-800 rounded-xl p-4 border border-purple-500">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="text-white font-bold">{item.agent}</h3>
+                  <p className="text-purple-300 text-sm">{item.timestamp}</p>
+                </div>
                 <div className="flex items-center gap-1 text-amber-400">
                   <Coins className="w-4 h-4" />
                   <span className="font-bold">{item.cost}</span>
                 </div>
-                {/* BOTÓN DE EXPORTACIÓN */}
-                <button
-                  onClick={() => exportToPDF(item, item.response)}
-                  className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm rounded hover:from-purple-500 hover:to-pink-500 transition-all flex items-center gap-1"
-                  title="Exportar a PDF"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  PDF
-                </button>
               </div>
+              <p className="text-purple-200 text-sm">{item.question}</p>
             </div>
-            <p className="text-purple-200 text-sm">{item.question}</p>
-            {item.response && (
-              <details className="mt-2">
-                <summary className="text-purple-400 text-xs cursor-pointer hover:text-purple-300">
-                  Ver respuesta completa
-                </summary>
-                <p className="text-purple-200 text-xs mt-2 pl-4 border-l-2 border-purple-500">
-                  {item.response.substring(0, 200)}...
-                </p>
-              </details>
-            )}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-);
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   const renderAdmin = () => (
     <div>
@@ -1124,54 +971,14 @@ const exportToPDF = (consultation, fullResponse) => {
     </div>
   );
 
-{messages.map((msg, idx) => (
-  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-    <div className={`max-w-[80%] rounded-lg p-4 ${msg.role === 'user' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'bg-slate-700 text-purple-100'}`}>
-      {msg.image && (
-        <img src={msg.image} alt="Carta natal" className="max-w-full rounded mb-2 max-h-64 object-contain" />
-      )}
-      <p className="whitespace-pre-wrap">{msg.content}</p>
-      
-      {/* BOTÓN EXPORTAR (solo para respuestas del asistente) */}
-      {msg.role === 'assistant' && !msg.content.includes('🌟') && idx > 0 && (
-        <button
-          onClick={() => {
-            const userMsg = messages[idx - 1];
-            exportToPDF({
-              id: Date.now(),
-              agent: selectedAgent.name,
-              question: userMsg.content,
-              response: msg.content,
-              cost: selectedAgent.cost,
-              timestamp: new Date().toLocaleString()
-            }, msg.content);
-          }}
-          className="mt-3 px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-500 transition-all flex items-center gap-1"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Exportar PDF
-        </button>
-      )}
-    </div>
-  </div>
-))}
-
   return (
     <>
-<Head>
+      <Head>
         <title>CambiaTuYo - Tu Portal Místico Digital</title>
         <meta name="description" content="Conecta con sabios digitales especializados en tarot, astrología, numerología, cristales y más. Transforma tu vida con guía espiritual impulsada por IA." />
         <meta name="keywords" content="tarot online, astrología, numerología, cábala, consulta esotérica, guía espiritual" />
-        <meta property="og:title" content="CambiaTuYo - Tu Portal Místico Digital" />
-        <meta property="og:description" content="Tu agencia de guías espirituales impulsados por IA" />
-        <meta property="og:url" content="https://cambiatuyo.es" />
-        <link rel="canonical" href="https://cambiatuyo.es" />
-</Head>
-            
+      </Head>
+      
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500">
           <div className="max-w-7xl mx-auto px-4 py-4">
@@ -1213,14 +1020,3 @@ const exportToPDF = (consultation, fullResponse) => {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
