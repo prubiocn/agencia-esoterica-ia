@@ -966,11 +966,16 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Agencia Esotérica IA</title>
-        <meta name="description" content="Portal místico digital" />
-      </Head>
-      
+<Head>
+        <title>CambiaTuYo - Tu Portal Místico Digital</title>
+        <meta name="description" content="Conecta con sabios digitales especializados en tarot, astrología, numerología, cristales y más. Transforma tu vida con guía espiritual impulsada por IA." />
+        <meta name="keywords" content="tarot online, astrología, numerología, cábala, consulta esotérica, guía espiritual" />
+        <meta property="og:title" content="CambiaTuYo - Tu Portal Místico Digital" />
+        <meta property="og:description" content="Tu agencia de guías espirituales impulsados por IA" />
+        <meta property="og:url" content="https://cambiatuyo.es" />
+        <link rel="canonical" href="https://cambiatuyo.es" />
+</Head>
+            
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500">
           <div className="max-w-7xl mx-auto px-4 py-4">
@@ -1012,6 +1017,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
