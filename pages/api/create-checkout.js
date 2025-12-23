@@ -5,7 +5,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { priceId, planName, planCredits, userEmail } = req.body;
+  const { priceId, planName, planCredits } = req.body;
+
+  console.log('🔵 Stripe checkout request:', { priceId, planName, planCredits });
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('❌ STRIPE_SECRET_KEY no está configurada');
+    return res.status(500).json({ error: 'Configuración de Stripe incompleta' });
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -19,25 +26,18 @@ export default async function handler(req, res) {
       mode: 'subscription',
       success_url: `${req.headers.origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}/?canceled=true`,
-      customer_email: userEmail || undefined,
       metadata: {
         planName: planName,
         credits: planCredits
       },
       billing_address_collection: 'required',
-      locale: 'es',
-      allow_promotion_codes: true, // Permite códigos de descuento
-      subscription_data: {
-        metadata: {
-          planName: planName,
-          credits: planCredits
-        }
-      }
+      locale: 'es'
     });
 
+    console.log('✅ Stripe session created:', session.id);
     res.status(200).json({ url: session.url });
   } catch (error) {
-    console.error('Stripe error:', error);
+    console.error('❌ Stripe error:', error);
     res.status(500).json({ error: error.message });
   }
 }
