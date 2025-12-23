@@ -187,13 +187,13 @@ export default function Home() {
   if (plan.id === 'free') return;
   
   const confirmed = window.confirm(
-    `🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n(Esta es una demostración - no se cobrará dinero real)`
+    `🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n⚠️ Esta es una demostración.\nNo se cobrará dinero real.`
   );
   
   if (confirmed) {
     setUserCredits(prev => prev + plan.credits);
     setUserPlan(plan.id);
-    alert(`✨ ¡Recarga exitosa!\n\nHas recibido ${plan.credits} créditos místicos.\nNuevo saldo: ${userCredits + plan.credits} créditos`);
+    alert(`✨ ¡Recarga exitosa!\n\nHas recibido ${plan.credits} créditos místicos.\n\nNuevo saldo: ${userCredits + plan.credits} créditos`);
     setView('home');
   }
 };
@@ -384,6 +384,7 @@ export default function Home() {
   );
 
 }
+
 
 
 
