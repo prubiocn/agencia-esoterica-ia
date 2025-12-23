@@ -1124,6 +1124,42 @@ const exportToPDF = (consultation, fullResponse) => {
     </div>
   );
 
+{messages.map((msg, idx) => (
+  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+    <div className={`max-w-[80%] rounded-lg p-4 ${msg.role === 'user' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'bg-slate-700 text-purple-100'}`}>
+      {msg.image && (
+        <img src={msg.image} alt="Carta natal" className="max-w-full rounded mb-2 max-h-64 object-contain" />
+      )}
+      <p className="whitespace-pre-wrap">{msg.content}</p>
+      
+      {/* BOTÓN EXPORTAR (solo para respuestas del asistente) */}
+      {msg.role === 'assistant' && !msg.content.includes('🌟') && idx > 0 && (
+        <button
+          onClick={() => {
+            const userMsg = messages[idx - 1];
+            exportToPDF({
+              id: Date.now(),
+              agent: selectedAgent.name,
+              question: userMsg.content,
+              response: msg.content,
+              cost: selectedAgent.cost,
+              timestamp: new Date().toLocaleString()
+            }, msg.content);
+          }}
+          className="mt-3 px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-500 transition-all flex items-center gap-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar PDF
+        </button>
+      )}
+    </div>
+  </div>
+))}
+
   return (
     <>
 <Head>
@@ -1177,6 +1213,7 @@ const exportToPDF = (consultation, fullResponse) => {
     </>
   );
 }
+
 
 
 
