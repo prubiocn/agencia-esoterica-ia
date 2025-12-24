@@ -1099,7 +1099,7 @@ const plans = [
   {
     id: 'free',
     name: 'Explorador',
-    credits: 20,
+    credits: 30,
     price: 0,
     color: 'from-slate-600 to-slate-700',
     popular: false
@@ -1642,3 +1642,4 @@ export default function Home() {
     </>
   );
 }
+
