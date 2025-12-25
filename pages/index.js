@@ -1098,19 +1098,21 @@ TONO: Celestial, amoroso, esperanzador, reconfortante, divino, elevado pero acce
 const plans = [
   {
     id: 'free',
-    name: 'Explorador',
+    name: 'Básico',
     credits: 30,
     price: 0,
     color: 'from-slate-600 to-slate-700',
-    popular: false
+    popular: false,
+    features: ['30 créditos de bienvenida', 'Acceso a todos los agentes', 'Consultas básicas']
   },
   {
     id: 'mystic',
     name: 'Místico',
-    credits: 150,
-    price: 9.99,
+    credits: 250,
+    price: 19.99,
     color: 'from-purple-600 to-pink-600',
-    popular: true
+    popular: true,
+    features: ['250 créditos mensuales', 'Acceso prioritario', 'Consultas ilimitadas', 'Soporte premium']
   },
   {
     id: 'master',
@@ -1118,7 +1120,8 @@ const plans = [
     credits: 500,
     price: 29.99,
     color: 'from-amber-600 to-orange-600',
-    popular: false
+    popular: false,
+    features: ['500 créditos mensuales', 'Acceso VIP', 'Consultas profundas ilimitadas', 'Soporte prioritario 24/7']
   }
 ];
 
@@ -1132,6 +1135,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [consultationHistory, setConsultationHistory] = useState([]);
   const [expandedAgent, setExpandedAgent] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const [adminStats] = useState({
     totalUsers: 1247,
     activeSubscriptions: 342,
@@ -1145,9 +1149,18 @@ export default function Home() {
       return;
     }
     setSelectedAgent(agent);
+    setShowSuggestions(true); // Mostrar sugerencias al inicio
+    
+    // Crear mensaje de bienvenida
+    const welcomeMessage = `🌟 Saludos, buscador de verdades. Soy ${agent.name}, tu guía en ${agent.specialty.toLowerCase()}.
+
+Esta consulta costará ${agent.cost} créditos por mensaje.
+
+💡 **Puedes preguntarme sobre:**`;
+    
     setMessages([{
       role: 'assistant',
-      content: `🌟 Saludos, buscador de verdades. Soy ${agent.name}, tu guía en ${agent.specialty.toLowerCase()}. Esta consulta costará ${agent.cost} créditos. ¿Qué deseas explorar hoy?`
+      content: welcomeMessage
     }]);
     setView('chat');
   };
@@ -1159,6 +1172,7 @@ export default function Home() {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setShowSuggestions(false); // Ocultar sugerencias después del primer mensaje
     setUserCredits(prev => prev - selectedAgent.cost);
 
     const consultation = {
@@ -1194,6 +1208,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
   };
 
   const handlePurchasePlan = (plan) => {
@@ -1346,7 +1365,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {plans.map((plan) => (
-          <div key={plan.id} className={`relative rounded-xl p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 ${plan.popular ? 'border-amber-400 shadow-xl shadow-amber-500/20' : 'border-purple-500'}`}>
+          <div key={plan.id} className={`relative rounded-xl p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 ${plan.popular ? 'border-amber-400 shadow-xl shadow-amber-500/20 scale-105' : 'border-purple-500'} transition-transform hover:scale-105`}>
             {plan.popular && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                 <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-black text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
@@ -1375,6 +1394,18 @@ export default function Home() {
               </div>
               <p className="text-purple-300 text-sm text-center">créditos místicos</p>
             </div>
+            
+            {/* Características del plan */}
+            {plan.features && (
+              <div className="mb-6 space-y-2">
+                {plan.features.map((feature, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-purple-200 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             
             <button 
               onClick={() => handlePurchasePlan(plan)} 
@@ -1456,7 +1487,7 @@ export default function Home() {
       <div className="lg:col-span-1">
         <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500 sticky top-4">
           <button 
-            onClick={() => { setSelectedAgent(null); setMessages([]); setView('home'); }} 
+            onClick={() => { setSelectedAgent(null); setMessages([]); setView('home'); setShowSuggestions(true); }} 
             className="w-full mb-6 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             ← Volver al inicio
@@ -1494,6 +1525,25 @@ export default function Home() {
                 </div>
               </div>
             ))}
+            
+            {/* Sugerencias de preguntas */}
+            {showSuggestions && messages.length === 1 && (
+              <div className="flex justify-start">
+                <div className="max-w-[90%] space-y-2">
+                  <p className="text-purple-300 text-sm mb-2">👇 Haz clic en una pregunta para comenzar:</p>
+                  {selectedAgent.examples.map((example, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSuggestionClick(example)}
+                      className="w-full text-left px-4 py-3 bg-slate-700 hover:bg-purple-600 text-purple-200 hover:text-white rounded-lg border border-purple-500/50 hover:border-purple-400 transition-all text-sm"
+                    >
+                      💡 {example}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-slate-700 rounded-lg p-4 border border-purple-500/30">
@@ -1642,4 +1692,3 @@ export default function Home() {
     </>
   );
 }
-
