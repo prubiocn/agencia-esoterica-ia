@@ -1236,7 +1236,7 @@ const plans = [
 
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
-  'admin@cambiatuyo.es',
+  'admin@cambiatuyo.com',
   'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
@@ -1244,6 +1244,200 @@ const SUPER_ADMINS = [
 // Función para verificar si un email es super admin
 const isSuperAdmin = (email) => {
   return SUPER_ADMINS.includes(email?.toLowerCase());
+};
+
+// Función para exportar emails a CSV
+const exportEmailsToCSV = () => {
+  const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+  const emails = Object.values(users).map(user => ({
+    email: user.email,
+    nombre: user.name,
+    plan: user.plan,
+    creditos: user.credits,
+    fechaRegistro: user.registeredAt || 'N/A'
+  }));
+  
+  if (emails.length === 0) {
+    alert('No hay usuarios registrados todavía');
+    return;
+  }
+  
+  // Crear CSV
+  const headers = ['Email', 'Nombre', 'Plan', 'Créditos', 'Fecha Registro'];
+  const csvContent = [
+    headers.join(','),
+    ...emails.map(e => `${e.email},"${e.nombre}",${e.plan},${e.creditos},${e.fechaRegistro}`)
+  ].join('\n');
+  
+  // Descargar archivo
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `emails-cambiatuyo-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  alert(`✅ ${emails.length} emails exportados exitosamente a CSV`);
+};
+
+// Función para exportar historial a PDF
+const exportHistoryToPDF = (consultationHistory, userName = 'Usuario') => {
+  if (consultationHistory.length === 0) {
+    alert('No hay consultas en el historial para exportar');
+    return;
+  }
+  
+  // Crear contenido HTML para PDF
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Historial de Consultas - CambiaTuYo</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+          padding-bottom: 20px;
+          border-bottom: 3px solid #9333ea;
+        }
+        .header h1 {
+          color: #9333ea;
+          margin: 0;
+          font-size: 32px;
+        }
+        .header p {
+          color: #666;
+          margin: 5px 0;
+        }
+        .consultation {
+          background: #f9fafb;
+          border-left: 4px solid #9333ea;
+          padding: 15px;
+          margin-bottom: 20px;
+          border-radius: 4px;
+        }
+        .consultation-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+          font-weight: bold;
+        }
+        .agent-name {
+          color: #9333ea;
+          font-size: 18px;
+        }
+        .timestamp {
+          color: #666;
+          font-size: 12px;
+        }
+        .question {
+          background: white;
+          padding: 10px;
+          border-radius: 4px;
+          margin: 10px 0;
+        }
+        .cost {
+          color: #f59e0b;
+          font-weight: bold;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 2px solid #e5e7eb;
+          text-align: center;
+          color: #666;
+          font-size: 12px;
+        }
+        .stats {
+          background: #ede9fe;
+          padding: 15px;
+          border-radius: 8px;
+          margin: 20px 0;
+        }
+        .stats-row {
+          display: flex;
+          justify-content: space-between;
+          margin: 5px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>✨ CambiaTuYo</h1>
+        <p>Historial de Consultas Místicas</p>
+        <p><strong>${userName}</strong></p>
+        <p>Generado: ${new Date().toLocaleDateString('es-ES', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</p>
+      </div>
+      
+      <div class="stats">
+        <h3>📊 Resumen de Actividad</h3>
+        <div class="stats-row">
+          <span>Total de consultas:</span>
+          <strong>${consultationHistory.length}</strong>
+        </div>
+        <div class="stats-row">
+          <span>Créditos gastados:</span>
+          <strong class="cost">${consultationHistory.reduce((sum, c) => sum + c.cost, 0)} créditos</strong>
+        </div>
+        <div class="stats-row">
+          <span>Agentes consultados:</span>
+          <strong>${new Set(consultationHistory.map(c => c.agent)).size} diferentes</strong>
+        </div>
+      </div>
+      
+      <h2>🔮 Consultas Realizadas</h2>
+      
+      ${consultationHistory.map((consultation, idx) => `
+        <div class="consultation">
+          <div class="consultation-header">
+            <span class="agent-name">${idx + 1}. ${consultation.agent}</span>
+            <span class="cost">${consultation.cost} créditos</span>
+          </div>
+          <div class="timestamp">📅 ${consultation.timestamp}</div>
+          <div class="question">
+            <strong>Consulta:</strong><br>
+            ${consultation.question}
+          </div>
+        </div>
+      `).join('')}
+      
+      <div class="footer">
+        <p><strong>CambiaTuYo</strong> - Tu Portal Místico Digital</p>
+        <p>Este documento contiene ${consultationHistory.length} consultas realizadas</p>
+        <p>© ${new Date().getFullYear()} CambiaTuYo. Todos los derechos reservados.</p>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  // Crear ventana temporal para imprimir
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+  
+  // Esperar a que cargue y luego imprimir
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
 };
 
 export default function Home() {
@@ -1738,7 +1932,21 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
 
   const renderHistory = () => (
     <div>
-      <h2 className="text-3xl font-bold text-white mb-6">📜 Historial de Consultas</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-white">📜 Historial de Consultas</h2>
+        {consultationHistory.length > 0 && (
+          <button
+            onClick={() => exportHistoryToPDF(consultationHistory, currentUser?.name)}
+            className="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-lg flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Exportar a PDF
+          </button>
+        )}
+      </div>
+      
       {consultationHistory.length === 0 ? (
         <div className="bg-slate-800 rounded-xl p-12 text-center border-2 border-purple-500/50">
           <History className="w-20 h-20 text-purple-400 mx-auto mb-4" />
@@ -1746,51 +1954,211 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
           <p className="text-purple-300">Comienza tu viaje místico consultando a nuestros sabios</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {consultationHistory.map((item) => (
-            <div key={item.id} className="bg-slate-800 rounded-xl p-5 border border-purple-500 hover:border-purple-400 transition-colors">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-white font-bold text-lg">{item.agent}</h3>
-                  <p className="text-purple-300 text-sm">{item.timestamp}</p>
-                </div>
-                <div className="flex items-center gap-1.5 bg-amber-500/20 px-3 py-1 rounded-full">
-                  <Coins className="w-4 h-4 text-amber-400" />
-                  <span className="font-bold text-amber-400">{item.cost}</span>
-                </div>
-              </div>
-              <p className="text-purple-200 text-sm bg-slate-900/50 p-3 rounded border-l-2 border-purple-500">
-                {item.question}
-              </p>
+        <div>
+          {/* Resumen de estadísticas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-4 shadow-lg">
+              <p className="text-purple-100 text-sm font-medium mb-1">Total Consultas</p>
+              <p className="text-3xl font-bold text-white">{consultationHistory.length}</p>
             </div>
-          ))}
+            <div className="bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl p-4 shadow-lg">
+              <p className="text-amber-100 text-sm font-medium mb-1">Créditos Gastados</p>
+              <p className="text-3xl font-bold text-white">{consultationHistory.reduce((sum, c) => sum + c.cost, 0)}</p>
+            </div>
+            <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-4 shadow-lg">
+              <p className="text-blue-100 text-sm font-medium mb-1">Agentes Consultados</p>
+              <p className="text-3xl font-bold text-white">{new Set(consultationHistory.map(c => c.agent)).size}</p>
+            </div>
+          </div>
+          
+          {/* Lista de consultas */}
+          <div className="space-y-4">
+            {consultationHistory.map((item) => (
+              <div key={item.id} className="bg-slate-800 rounded-xl p-5 border border-purple-500 hover:border-purple-400 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="text-white font-bold text-lg">{item.agent}</h3>
+                    <p className="text-purple-300 text-sm">{item.timestamp}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-amber-500/20 px-3 py-1 rounded-full">
+                    <Coins className="w-4 h-4 text-amber-400" />
+                    <span className="font-bold text-amber-400">{item.cost}</span>
+                  </div>
+                </div>
+                <p className="text-purple-200 text-sm bg-slate-900/50 p-3 rounded border-l-2 border-purple-500">
+                  {item.question}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 
-  const renderAdmin = () => (
-    <div>
-      <h2 className="text-3xl font-bold text-white mb-6">⚙️ Panel de Administración</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 shadow-lg">
-          <Users className="w-10 h-10 text-white mb-3" />
-          <p className="text-blue-100 text-sm font-medium mb-1">Total Usuarios</p>
-          <p className="text-4xl font-bold text-white">{adminStats.totalUsers.toLocaleString()}</p>
+  const renderAdmin = () => {
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    const totalEmails = Object.keys(users).length;
+    
+    return (
+      <div>
+        <h2 className="text-3xl font-bold text-white mb-6">⚙️ Panel de Administración</h2>
+        
+        {/* Estadísticas generales */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 shadow-lg">
+            <Users className="w-10 h-10 text-white mb-3" />
+            <p className="text-blue-100 text-sm font-medium mb-1">Total Usuarios</p>
+            <p className="text-4xl font-bold text-white">{totalEmails.toLocaleString()}</p>
+          </div>
+          <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 shadow-lg">
+            <TrendingUp className="w-10 h-10 text-white mb-3" />
+            <p className="text-purple-100 text-sm font-medium mb-1">Suscripciones Activas</p>
+            <p className="text-4xl font-bold text-white">{adminStats.activeSubscriptions}</p>
+          </div>
+          <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl p-6 shadow-lg">
+            <DollarSign className="w-10 h-10 text-white mb-3" />
+            <p className="text-emerald-100 text-sm font-medium mb-1">Ingresos Mensuales</p>
+            <p className="text-4xl font-bold text-white">€{adminStats.monthlyRevenue.toLocaleString()}</p>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 shadow-lg">
-          <TrendingUp className="w-10 h-10 text-white mb-3" />
-          <p className="text-purple-100 text-sm font-medium mb-1">Suscripciones Activas</p>
-          <p className="text-4xl font-bold text-white">{adminStats.activeSubscriptions}</p>
+        
+        {/* Sección de Marketing */}
+        <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Marketing & Emails
+              </h3>
+              <p className="text-purple-300 text-sm mt-2">
+                Base de datos de usuarios registrados para campañas de email marketing
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-slate-700/50 rounded-lg p-4 border border-purple-500/30">
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+                <div>
+                  <p className="text-purple-200 text-sm">Emails Totales</p>
+                  <p className="text-2xl font-bold text-white">{totalEmails}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-slate-700/50 rounded-lg p-4 border border-purple-500/30">
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="text-purple-200 text-sm">Emails Verificados</p>
+                  <p className="text-2xl font-bold text-white">{totalEmails}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <button
+              onClick={exportEmailsToCSV}
+              className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-bold transition-all shadow-lg flex items-center justify-center gap-3"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Exportar Emails a CSV
+            </button>
+            
+            <button
+              onClick={() => {
+                const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+                const emailList = Object.keys(users).join(', ');
+                navigator.clipboard.writeText(emailList);
+                alert(`✅ ${Object.keys(users).length} emails copiados al portapapeles`);
+              }}
+              className="px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-lg flex items-center gap-3"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              Copiar Lista
+            </button>
+          </div>
+          
+          <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="text-sm">
+                <p className="text-blue-300 font-semibold mb-1">💡 Tip para Email Marketing:</p>
+                <ul className="text-blue-200 space-y-1 list-disc list-inside">
+                  <li>Exporta el CSV y súbelo a Mailchimp, SendGrid o tu plataforma favorita</li>
+                  <li>Segmenta por plan (free, basic, mystic, master) para campañas específicas</li>
+                  <li>Respeta el GDPR: incluye opción de darse de baja</li>
+                  <li>Los usuarios nuevos tienen mejor tasa de conversión en las primeras 48h</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl p-6 shadow-lg">
-          <DollarSign className="w-10 h-10 text-white mb-3" />
-          <p className="text-emerald-100 text-sm font-medium mb-1">Ingresos Mensuales</p>
-          <p className="text-4xl font-bold text-white">€{adminStats.monthlyRevenue.toLocaleString()}</p>
+        
+        {/* Lista de usuarios registrados */}
+        <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500">
+          <h3 className="text-xl font-bold text-white mb-4">📋 Usuarios Registrados</h3>
+          {totalEmails === 0 ? (
+            <p className="text-purple-300 text-center py-8">No hay usuarios registrados todavía</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-purple-500/30">
+                    <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Email</th>
+                    <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Nombre</th>
+                    <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Plan</th>
+                    <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Créditos</th>
+                    <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Registro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.values(users).map((user, idx) => (
+                    <tr key={idx} className="border-b border-purple-500/10 hover:bg-slate-700/50">
+                      <td className="py-3 px-4 text-white text-sm">{user.email}</td>
+                      <td className="py-3 px-4 text-purple-200 text-sm">{user.name}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          user.plan === 'admin' ? 'bg-amber-500/20 text-amber-400' :
+                          user.plan === 'master' ? 'bg-orange-500/20 text-orange-400' :
+                          user.plan === 'mystic' ? 'bg-purple-500/20 text-purple-400' :
+                          user.plan === 'basic' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-slate-500/20 text-slate-400'
+                        }`}>
+                          {user.plan}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-amber-400 text-sm font-bold">
+                        {user.credits === 999999 ? '∞' : user.credits}
+                      </td>
+                      <td className="py-3 px-4 text-purple-300 text-xs">
+                        {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('es-ES') : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderChat = () => (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
