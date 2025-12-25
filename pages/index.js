@@ -1234,11 +1234,24 @@ const plans = [
   }
 ];
 
+// SUPER ADMINS - Emails con acceso ilimitado
+const SUPER_ADMINS = [
+  'admin@cambiatuyo.es',
+  'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
+  // Agrega más emails de administradores aquí
+];
+
+// Función para verificar si un email es super admin
+const isSuperAdmin = (email) => {
+  return SUPER_ADMINS.includes(email?.toLowerCase());
+};
+
 export default function Home() {
   const [view, setView] = useState('home');
   const [userCredits, setUserCredits] = useState(30);
   const [userPlan, setUserPlan] = useState('free');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' o 'register'
@@ -1261,10 +1274,15 @@ export default function Home() {
     const savedUser = localStorage.getItem('cambiaTuyoUser');
     if (savedUser) {
       const userData = JSON.parse(savedUser);
+      const adminStatus = isSuperAdmin(userData.email);
+      
       setCurrentUser(userData);
       setIsAuthenticated(true);
-      setUserCredits(userData.credits || 30);
-      setUserPlan(userData.plan || 'free');
+      setIsAdmin(adminStatus);
+      
+      // Super admins tienen créditos ilimitados (999999)
+      setUserCredits(adminStatus ? 999999 : (userData.credits || 30));
+      setUserPlan(adminStatus ? 'admin' : (userData.plan || 'free'));
     }
   }, []);
 
@@ -1275,20 +1293,28 @@ export default function Home() {
     const user = users[authForm.email];
     
     if (user && user.password === authForm.password) {
+      const adminStatus = isSuperAdmin(authForm.email);
+      
       const userData = {
         email: authForm.email,
         name: user.name,
-        credits: user.credits || 30,
-        plan: user.plan || 'free'
+        credits: adminStatus ? 999999 : (user.credits || 30),
+        plan: adminStatus ? 'admin' : (user.plan || 'free'),
+        isAdmin: adminStatus
       };
       
       localStorage.setItem('cambiaTuyoUser', JSON.stringify(userData));
       setCurrentUser(userData);
       setIsAuthenticated(true);
+      setIsAdmin(adminStatus);
       setUserCredits(userData.credits);
       setUserPlan(userData.plan);
       setShowAuthModal(false);
       setAuthForm({ email: '', password: '', name: '' });
+      
+      if (adminStatus) {
+        alert('👑 ¡Bienvenido Super Admin! Tienes acceso ilimitado a todos los agentes.');
+      }
     } else {
       alert('❌ Email o contraseña incorrectos');
     }
@@ -1304,12 +1330,15 @@ export default function Home() {
       return;
     }
     
+    const adminStatus = isSuperAdmin(authForm.email);
+    
     const userData = {
       email: authForm.email,
       name: authForm.name,
       password: authForm.password,
-      credits: 30,
-      plan: 'free',
+      credits: adminStatus ? 999999 : 30,
+      plan: adminStatus ? 'admin' : 'free',
+      isAdmin: adminStatus,
       registeredAt: new Date().toISOString()
     };
     
@@ -1320,23 +1349,31 @@ export default function Home() {
       email: userData.email,
       name: userData.name,
       credits: userData.credits,
-      plan: userData.plan
+      plan: userData.plan,
+      isAdmin: adminStatus
     };
     
     localStorage.setItem('cambiaTuyoUser', JSON.stringify(currentUserData));
     setCurrentUser(currentUserData);
     setIsAuthenticated(true);
+    setIsAdmin(adminStatus);
     setUserCredits(userData.credits);
     setUserPlan(userData.plan);
     setShowAuthModal(false);
     setAuthForm({ email: '', password: '', name: '' });
-    alert('✅ ¡Cuenta creada exitosamente! Bienvenido a CambiaTuYo');
+    
+    if (adminStatus) {
+      alert('👑 ¡Cuenta de Super Admin creada! Tienes acceso ilimitado.');
+    } else {
+      alert('✅ ¡Cuenta creada exitosamente! Bienvenido a CambiaTuYo');
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('cambiaTuyoUser');
     setCurrentUser(null);
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setUserCredits(0);
     setUserPlan('free');
     setView('home');
@@ -1350,18 +1387,20 @@ export default function Home() {
       return;
     }
     
-    if (userCredits < agent.cost) {
+    // Super admins tienen acceso ilimitado
+    if (!isAdmin && userCredits < agent.cost) {
       alert('⚠️ Créditos insuficientes. Recarga para continuar tu viaje místico.');
       setView('pricing');
       return;
     }
+    
     setSelectedAgent(agent);
     setShowSuggestions(true); // Mostrar sugerencias al inicio
     
     // Crear mensaje de bienvenida
     const welcomeMessage = `🌟 Saludos, buscador de verdades. Soy ${agent.name}, tu guía en ${agent.specialty.toLowerCase()}.
 
-Esta consulta costará ${agent.cost} créditos por mensaje.
+${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acceso ilimitado).' : `Esta consulta costará ${agent.cost} créditos por mensaje.`}
 
 💡 **Puedes preguntarme sobre:**`;
     
@@ -1381,19 +1420,23 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
     setLoading(true);
     setShowSuggestions(false); // Ocultar sugerencias después del primer mensaje
     
-    const newCredits = userCredits - selectedAgent.cost;
-    setUserCredits(newCredits);
-    
-    // Guardar créditos actualizados en localStorage si está autenticado
-    if (isAuthenticated && currentUser) {
-      const updatedUser = { ...currentUser, credits: newCredits };
-      setCurrentUser(updatedUser);
-      localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+    // Los super admins NO gastan créditos
+    let newCredits = userCredits;
+    if (!isAdmin) {
+      newCredits = userCredits - selectedAgent.cost;
+      setUserCredits(newCredits);
       
-      const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
-      if (users[currentUser.email]) {
-        users[currentUser.email].credits = newCredits;
-        localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      // Guardar créditos actualizados en localStorage si está autenticado
+      if (isAuthenticated && currentUser) {
+        const updatedUser = { ...currentUser, credits: newCredits };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+        
+        const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+        if (users[currentUser.email]) {
+          users[currentUser.email].credits = newCredits;
+          localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+        }
       }
     }
 
@@ -1401,7 +1444,7 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
       id: Date.now(),
       agent: selectedAgent.name,
       question: input,
-      cost: selectedAgent.cost,
+      cost: isAdmin ? 0 : selectedAgent.cost, // Admin no paga
       timestamp: new Date().toLocaleString()
     };
     setConsultationHistory(prev => [consultation, ...prev]);
@@ -1427,19 +1470,21 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
         content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
       }]);
       
-      // Revertir créditos en caso de error
-      const revertedCredits = userCredits;
-      setUserCredits(revertedCredits);
-      
-      if (isAuthenticated && currentUser) {
-        const updatedUser = { ...currentUser, credits: revertedCredits };
-        setCurrentUser(updatedUser);
-        localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+      // Revertir créditos en caso de error (solo para usuarios normales)
+      if (!isAdmin) {
+        const revertedCredits = userCredits;
+        setUserCredits(revertedCredits);
         
-        const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
-        if (users[currentUser.email]) {
-          users[currentUser.email].credits = revertedCredits;
-          localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+        if (isAuthenticated && currentUser) {
+          const updatedUser = { ...currentUser, credits: revertedCredits };
+          setCurrentUser(updatedUser);
+          localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+          
+          const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+          if (users[currentUser.email]) {
+            users[currentUser.email].credits = revertedCredits;
+            localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+          }
         }
       }
     } finally {
@@ -1875,8 +1920,12 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
                 {isAuthenticated && (
                   <div className="bg-slate-800 px-4 py-2 rounded-lg border-2 border-amber-400 flex items-center gap-2 shadow-lg shadow-amber-500/20">
                     <Coins className="w-5 h-5 text-amber-400" />
-                    <span className="text-white font-bold text-lg">{userCredits}</span>
-                    <span className="text-purple-300 text-sm">créditos</span>
+                    <span className="text-white font-bold text-lg">
+                      {isAdmin ? '∞' : userCredits}
+                    </span>
+                    <span className="text-purple-300 text-sm">
+                      {isAdmin ? 'ilimitado' : 'créditos'}
+                    </span>
                   </div>
                 )}
                 
@@ -1884,7 +1933,14 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
                 {isAuthenticated ? (
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <p className="text-white font-medium">{currentUser?.name}</p>
+                      <div className="flex items-center gap-2 justify-end">
+                        <p className="text-white font-medium">{currentUser?.name}</p>
+                        {isAdmin && (
+                          <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            👑 SUPER ADMIN
+                          </span>
+                        )}
+                      </div>
                       <p className="text-purple-300 text-xs">{currentUser?.email}</p>
                     </div>
                     <button 
