@@ -329,34 +329,62 @@ Ejemplo para 11 de febrero de 1988:
 
 **IMPORTANTE:** Si durante la suma obtienes 11, 22 o 33, NO los reduces más, son números maestros.
 
-CÁLCULO DEL AÑO PERSONAL:
-Fórmula: Día nacimiento + Mes nacimiento + Año actual (2025)
-Reduce a un dígito (1-9) o número maestro (11, 22, 33)
+CÁLCULO DEL AÑO PERSONAL (MUY IMPORTANTE):
+**MÉTODO CORRECTO - IGUAL que Número de Vida, suma TODOS los dígitos en UNA LÍNEA:**
 
-Ejemplo para alguien nacido el 15 de marzo:
-- Día: 1+5 = 6
-- Mes: Marzo = 3
-- Año actual: 2025 → 2+0+2+5 = 9
-- Total: 6 + 3 + 9 = 18 → 1+8 = 9
+Fórmula: Suma TODOS los dígitos de día nacimiento + mes nacimiento + año actual (2025)
+Reduce hasta obtener un solo dígito (1-9) o número maestro (11, 22, 33)
+
+Ejemplo para alguien nacido el 25 de diciembre + año 2025:
+- Día: 2, 5
+- Mes (diciembre = 12): 1, 2
+- Año actual: 2, 0, 2, 5
+- **Suma total: 2+5+1+2+2+0+2+5 = 19 → 1+9 = 10 → 1+0 = 1**
+- **Año Personal en 2025: 1**
+
+Ejemplo para alguien nacido el 15 de marzo + año 2025:
+- Día: 1, 5
+- Mes (marzo = 3): 3
+- Año actual: 2, 0, 2, 5
+- **Suma total: 1+5+3+2+0+2+5 = 18 → 1+8 = 9**
 - **Año Personal en 2025: 9**
 
-CÁLCULO DEL MES PERSONAL:
-Fórmula: Año Personal + Mes actual (12 para diciembre)
+Ejemplo para alguien nacido el 8 de julio + año 2025:
+- Día: 8
+- Mes (julio = 7): 7
+- Año actual: 2, 0, 2, 5
+- **Suma total: 8+7+2+0+2+5 = 24 → 2+4 = 6**
+- **Año Personal en 2025: 6**
 
-Ejemplo usando el Año Personal 9:
+CÁLCULO DEL MES PERSONAL:
+**MÉTODO CORRECTO - Suma TODOS los dígitos en UNA LÍNEA:**
+
+Fórmula: Año Personal + Mes actual
+Reduce hasta obtener un solo dígito (1-9) o número maestro (11, 22, 33)
+
+Ejemplo usando Año Personal = 1 + Diciembre (mes 12):
+- Año Personal: 1
+- Mes actual (diciembre = 12): 1, 2
+- **Suma total: 1+1+2 = 4**
+- **Mes Personal en diciembre 2025: 4**
+
+Ejemplo usando Año Personal = 9 + Diciembre (mes 12):
 - Año Personal: 9
-- Mes actual: 12 (diciembre) → 1+2 = 3
-- Total: 9 + 3 = 12 → 1+2 = 3
+- Mes actual (diciembre = 12): 1, 2
+- **Suma total: 9+1+2 = 12 → 1+2 = 3**
 - **Mes Personal en diciembre 2025: 3**
 
 CÁLCULO DEL DÍA PERSONAL:
-Fórmula: Mes Personal + Día del mes (24)
+**MÉTODO CORRECTO - Suma TODOS los dígitos en UNA LÍNEA:**
 
-Ejemplo usando Mes Personal 3:
-- Mes Personal: 3
-- Día: 24 → 2+4 = 6
-- Total: 3 + 6 = 9
-- **Día Personal el 24 de diciembre: 9**
+Fórmula: Mes Personal + Día del mes
+Reduce hasta obtener un solo dígito (1-9) o número maestro (11, 22, 33)
+
+Ejemplo usando Mes Personal = 4 + Día 24:
+- Mes Personal: 4
+- Día del mes: 2, 4
+- **Suma total: 4+2+4 = 10 → 1+0 = 1**
+- **Día Personal el 24 de diciembre: 1**
 
 SIGNIFICADOS DE NÚMEROS:
 1: Liderazgo, independencia, iniciativa, nuevos comienzos
@@ -391,18 +419,20 @@ CICLOS DE 9 AÑOS:
 PROCESO:
 1. Solicitas nombre completo de nacimiento y fecha de nacimiento
 2. Calculas números principales (MUESTRAS el proceso paso a paso):
-   **Para Número de Vida:** Escribe TODOS los dígitos sumados en UNA línea
-   Ejemplo: "2+4+4+1+9+6+7 = 33" (NO separar por día/mes/año)
-3. **CALCULAS Año Personal usando 2025 como año actual**
-4. Calculas Mes Personal y Día Personal si es relevante
-5. Explicas significado de cada número
-6. Analizas desafíos y lecciones
-7. Ofreces guía práctica según el año/mes/día personal actual
+   **MÉTODO UNIVERSAL:** Escribe TODOS los dígitos sumados en UNA línea
+   - Número de Vida: 2+4+4+1+9+6+7 = 33
+   - Año Personal: 2+5+1+2+2+0+2+5 = 19 → 10 → 1
+   - Mes Personal: 1+1+2 = 4
+   - Día Personal: 4+2+4 = 10 → 1
+3. Explicas significado de cada número
+4. Analizas desafíos y lecciones
+5. Ofreces guía práctica según el año/mes/día personal actual
 
 RECORDATORIO CRÍTICO SOBRE CÁLCULO:
-- **Número de Vida:** Suma TODOS los dígitos en UNA operación (día+mes+año en una sola línea)
-- **Año Personal:** Día reducido + Mes reducido + Año actual reducido
-- NO confundas estos dos métodos diferentes
+- **TODOS los cálculos:** Suma TODOS los dígitos en UNA operación
+- **Siempre en UNA línea:** 2+5+1+2+2+0+2+5 = resultado
+- **NUNCA separes** en (día)+(mes)+(año) con paréntesis
+- **Método consistente** para Número de Vida, Año Personal, Mes Personal y Día Personal
 
 LÍMITES:
 - NO predices desgracias o eventos traumáticos
@@ -411,16 +441,21 @@ LÍMITES:
 - Enfatizas el poder de decisión personal y libre albedrío
 - Los números son herramientas de autoconocimiento, no predicción
 
-DIFERENCIA CRÍTICA ENTRE CÁLCULOS:
-**Número de Vida (Camino de Vida):**
+MÉTODO UNIVERSAL DE CÁLCULO:
+**TODOS los cálculos principales (Número de Vida, Año Personal, Mes Personal) usan el MISMO método:**
 → Suma TODOS los dígitos juntos en UNA operación
-→ Ejemplo: 24/04/1967 = 2+4+4+1+9+6+7 = 33
+→ Reduce hasta obtener un solo dígito o número maestro (11, 22, 33)
+
+**Número de Vida:**
+Ejemplo: 24/04/1967 = 2+4+4+1+9+6+7 = 33
 
 **Año Personal:**
-→ Reduce cada componente PRIMERO, luego suma
-→ Ejemplo: 24/04 + 2025 = (2+4)+(4)+(2+0+2+5) = 6+4+9 = 19 = 1+9 = 10 = 1+0 = 1
+Ejemplo: 25/12 + 2025 = 2+5+1+2+2+0+2+5 = 19 → 1+9 = 10 → 1+0 = 1
 
-**NUNCA confundas estos dos métodos. Son diferentes y sirven para propósitos distintos.**
+**Mes Personal:**
+Ejemplo: Año Personal (1) + Diciembre (12) = 1+1+2 = 4
+
+**La diferencia principal está en QUÉ sumas (fecha completa vs día+mes+año actual), NO en CÓMO sumas.**
 
 TONO: Analítico, espiritual, revelador, matemático pero místico, preciso en cálculos.`
   },
@@ -1203,6 +1238,11 @@ export default function Home() {
   const [view, setView] = useState('home');
   const [userCredits, setUserCredits] = useState(30);
   const [userPlan, setUserPlan] = useState('free');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' o 'register'
+  const [authForm, setAuthForm] = useState({ email: '', password: '', name: '' });
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -1216,7 +1256,100 @@ export default function Home() {
     monthlyRevenue: 4580
   });
 
+  // Verificar sesión al cargar
+  React.useEffect(() => {
+    const savedUser = localStorage.getItem('cambiaTuyoUser');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setCurrentUser(userData);
+      setIsAuthenticated(true);
+      setUserCredits(userData.credits || 30);
+      setUserPlan(userData.plan || 'free');
+    }
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Simulación de login (en producción conectarías con backend/Firebase)
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    const user = users[authForm.email];
+    
+    if (user && user.password === authForm.password) {
+      const userData = {
+        email: authForm.email,
+        name: user.name,
+        credits: user.credits || 30,
+        plan: user.plan || 'free'
+      };
+      
+      localStorage.setItem('cambiaTuyoUser', JSON.stringify(userData));
+      setCurrentUser(userData);
+      setIsAuthenticated(true);
+      setUserCredits(userData.credits);
+      setUserPlan(userData.plan);
+      setShowAuthModal(false);
+      setAuthForm({ email: '', password: '', name: '' });
+    } else {
+      alert('❌ Email o contraseña incorrectos');
+    }
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    // Simulación de registro
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    
+    if (users[authForm.email]) {
+      alert('❌ Este email ya está registrado');
+      return;
+    }
+    
+    const userData = {
+      email: authForm.email,
+      name: authForm.name,
+      password: authForm.password,
+      credits: 30,
+      plan: 'free',
+      registeredAt: new Date().toISOString()
+    };
+    
+    users[authForm.email] = userData;
+    localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+    
+    const currentUserData = {
+      email: userData.email,
+      name: userData.name,
+      credits: userData.credits,
+      plan: userData.plan
+    };
+    
+    localStorage.setItem('cambiaTuyoUser', JSON.stringify(currentUserData));
+    setCurrentUser(currentUserData);
+    setIsAuthenticated(true);
+    setUserCredits(userData.credits);
+    setUserPlan(userData.plan);
+    setShowAuthModal(false);
+    setAuthForm({ email: '', password: '', name: '' });
+    alert('✅ ¡Cuenta creada exitosamente! Bienvenido a CambiaTuYo');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('cambiaTuyoUser');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setUserCredits(0);
+    setUserPlan('free');
+    setView('home');
+    alert('👋 Has cerrado sesión');
+  };
+
   const handleAgentClick = (agent) => {
+    if (!isAuthenticated) {
+      alert('🔐 Debes iniciar sesión para consultar con los agentes');
+      setShowAuthModal(true);
+      return;
+    }
+    
     if (userCredits < agent.cost) {
       alert('⚠️ Créditos insuficientes. Recarga para continuar tu viaje místico.');
       setView('pricing');
@@ -1247,7 +1380,22 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
     setInput('');
     setLoading(true);
     setShowSuggestions(false); // Ocultar sugerencias después del primer mensaje
-    setUserCredits(prev => prev - selectedAgent.cost);
+    
+    const newCredits = userCredits - selectedAgent.cost;
+    setUserCredits(newCredits);
+    
+    // Guardar créditos actualizados en localStorage si está autenticado
+    if (isAuthenticated && currentUser) {
+      const updatedUser = { ...currentUser, credits: newCredits };
+      setCurrentUser(updatedUser);
+      localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+      
+      const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+      if (users[currentUser.email]) {
+        users[currentUser.email].credits = newCredits;
+        localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      }
+    }
 
     const consultation = {
       id: Date.now(),
@@ -1278,7 +1426,22 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
         role: 'assistant',
         content: '⚠️ Las energías cósmicas están perturbadas. Intenta de nuevo.'
       }]);
-      setUserCredits(prev => prev + selectedAgent.cost);
+      
+      // Revertir créditos en caso de error
+      const revertedCredits = userCredits;
+      setUserCredits(revertedCredits);
+      
+      if (isAuthenticated && currentUser) {
+        const updatedUser = { ...currentUser, credits: revertedCredits };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+        
+        const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+        if (users[currentUser.email]) {
+          users[currentUser.email].credits = revertedCredits;
+          localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -1291,9 +1454,37 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
 
   const handlePurchasePlan = (plan) => {
     if (plan.id === 'free') return;
-    if (confirm(`🔮 Confirmar:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n(Simulación)`)) {
-      setUserCredits(prev => prev + plan.credits);
+    
+    if (!isAuthenticated) {
+      alert('🔐 Debes iniciar sesión para comprar créditos');
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (confirm(`🔮 Confirmar compra:\n\nPlan: ${plan.name}\nCréditos: ${plan.credits}\nPrecio: €${plan.price}\n\n(Simulación de pago con Stripe)`)) {
+      // Actualizar créditos
+      const newCredits = userCredits + plan.credits;
+      setUserCredits(newCredits);
       setUserPlan(plan.id);
+      
+      // Guardar en usuario autenticado
+      const updatedUser = {
+        ...currentUser,
+        credits: newCredits,
+        plan: plan.id
+      };
+      
+      setCurrentUser(updatedUser);
+      localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedUser));
+      
+      // Actualizar en la base de usuarios
+      const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+      if (users[currentUser.email]) {
+        users[currentUser.email].credits = newCredits;
+        users[currentUser.email].plan = plan.id;
+        localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      }
+      
       alert(`✨ ¡Pago exitoso! Has recibido ${plan.credits} créditos místicos.`);
       setView('home');
     }
@@ -1681,11 +1872,36 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
               
               <div className="flex items-center gap-4">
                 {/* Contador de créditos */}
-                <div className="bg-slate-800 px-4 py-2 rounded-lg border-2 border-amber-400 flex items-center gap-2 shadow-lg shadow-amber-500/20">
-                  <Coins className="w-5 h-5 text-amber-400" />
-                  <span className="text-white font-bold text-lg">{userCredits}</span>
-                  <span className="text-purple-300 text-sm">créditos</span>
-                </div>
+                {isAuthenticated && (
+                  <div className="bg-slate-800 px-4 py-2 rounded-lg border-2 border-amber-400 flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                    <Coins className="w-5 h-5 text-amber-400" />
+                    <span className="text-white font-bold text-lg">{userCredits}</span>
+                    <span className="text-purple-300 text-sm">créditos</span>
+                  </div>
+                )}
+                
+                {/* Usuario y Login/Logout */}
+                {isAuthenticated ? (
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="text-white font-medium">{currentUser?.name}</p>
+                      <p className="text-purple-300 text-xs">{currentUser?.email}</p>
+                    </div>
+                    <button 
+                      onClick={handleLogout} 
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => setShowAuthModal(true)} 
+                    className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-lg"
+                  >
+                    Iniciar Sesión
+                  </button>
+                )}
                 
                 {/* Navegación */}
                 <nav className="flex gap-2">
@@ -1746,6 +1962,80 @@ Esta consulta costará ${agent.cost} créditos por mensaje.
           {view === 'admin' && renderAdmin()}
           {view === 'chat' && renderChat()}
         </div>
+        
+        {/* Modal de Autenticación */}
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-800 rounded-xl p-8 max-w-md w-full border-2 border-purple-500 shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-white">
+                  {authMode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                </h2>
+                <button 
+                  onClick={() => setShowAuthModal(false)}
+                  className="text-purple-300 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+                {authMode === 'register' && (
+                  <div>
+                    <label className="block text-purple-300 text-sm mb-2">Nombre</label>
+                    <input
+                      type="text"
+                      value={authForm.name}
+                      onChange={(e) => setAuthForm({...authForm, name: e.target.value})}
+                      className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-purple-500 focus:outline-none focus:border-purple-400"
+                      required
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-purple-300 text-sm mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={authForm.email}
+                    onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-purple-500 focus:outline-none focus:border-purple-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-purple-300 text-sm mb-2">Contraseña</label>
+                  <input
+                    type="password"
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-purple-500 focus:outline-none focus:border-purple-400"
+                    required
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-lg"
+                >
+                  {authMode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                </button>
+              </form>
+              
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                  className="text-purple-300 hover:text-purple-200 text-sm"
+                >
+                  {authMode === 'login' 
+                    ? '¿No tienes cuenta? Regístrate aquí' 
+                    : '¿Ya tienes cuenta? Inicia sesión'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
