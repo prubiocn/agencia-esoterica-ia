@@ -2067,16 +2067,26 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
   const renderHistory = () => (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-white">📜 Historial de Consultas</h2>
+        <div>
+          <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+            📜 Historial de Todas las Consultas
+            <span className="text-sm bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full font-semibold">
+              👑 Solo Admin
+            </span>
+          </h2>
+          <p className="text-purple-300 text-sm mt-2">
+            Vista completa de todas las consultas realizadas en la plataforma
+          </p>
+        </div>
         {consultationHistory.length > 0 && (
           <button
-            onClick={() => exportHistoryToPDF(consultationHistory, currentUser?.name)}
+            onClick={() => exportHistoryToPDF(consultationHistory, 'Admin')}
             className="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-lg flex items-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Exportar a PDF
+            Exportar Todo a PDF
           </button>
         )}
       </div>
@@ -2084,8 +2094,8 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
       {consultationHistory.length === 0 ? (
         <div className="bg-slate-800 rounded-xl p-12 text-center border-2 border-purple-500/50">
           <History className="w-20 h-20 text-purple-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">Sin consultas aún</h3>
-          <p className="text-purple-300">Comienza tu viaje místico consultando a nuestros sabios</p>
+          <h3 className="text-xl font-semibold text-white mb-2">No hay consultas registradas</h3>
+          <p className="text-purple-300">Los usuarios aún no han realizado consultas con los agentes</p>
         </div>
       ) : (
         <div>
@@ -2321,16 +2331,16 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
             ← Volver al inicio
           </button>
           
-          {/* Botón para exportar conversación */}
+          {/* Botón para exportar conversación - visible y destacado */}
           {messages.length > 1 && (
             <button 
               onClick={() => exportConversationToPDF(selectedAgent, messages, currentUser?.name)}
-              className="w-full mb-6 px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              className="w-full mb-4 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-lg"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Exportar Conversación
+              💾 Guardar Conversación
             </button>
           )}
           
@@ -2356,14 +2366,32 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
         <div className="bg-slate-800 rounded-xl border-2 border-purple-500 flex flex-col h-[600px]">
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-lg p-4 ${
-                  msg.role === 'user' 
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
-                    : 'bg-slate-700 text-purple-100 border border-purple-500/30'
-                }`}>
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
+              <div key={idx}>
+                <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-lg p-4 ${
+                    msg.role === 'user' 
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                      : 'bg-slate-700 text-purple-100 border border-purple-500/30'
+                  }`}>
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  </div>
                 </div>
+                
+                {/* Recordatorio discreto para exportar - solo después de respuestas del agente */}
+                {msg.role === 'assistant' && idx > 0 && idx === messages.length - 1 && !loading && (
+                  <div className="flex justify-start mt-2">
+                    <div className="max-w-[80%] bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-green-300">
+                          <strong>¿Quieres guardar esta consulta?</strong> Haz clic en el botón verde <strong>"💾 Guardar Conversación"</strong> arriba a la izquierda para tener un PDF con toda la conversación.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
             
@@ -2513,28 +2541,34 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
                   >
                     <CreditCard className="w-5 h-5" />
                   </button>
-                  <button 
-                    onClick={() => setView('history')} 
-                    className={`px-4 py-2 rounded-lg transition-all ${
-                      view === 'history' 
-                        ? 'bg-purple-600 text-white shadow-lg' 
-                        : 'bg-slate-700 text-purple-300 hover:bg-slate-600'
-                    }`}
-                    title="Historial"
-                  >
-                    <History className="w-5 h-5" />
-                  </button>
-                  <button 
-                    onClick={() => setView('admin')} 
-                    className={`px-4 py-2 rounded-lg transition-all ${
-                      view === 'admin' 
-                        ? 'bg-purple-600 text-white shadow-lg' 
-                        : 'bg-slate-700 text-purple-300 hover:bg-slate-600'
-                    }`}
-                    title="Admin"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
+                  
+                  {/* Botones solo para Super Admins */}
+                  {isAdmin && (
+                    <>
+                      <button 
+                        onClick={() => setView('history')} 
+                        className={`px-4 py-2 rounded-lg transition-all ${
+                          view === 'history' 
+                            ? 'bg-purple-600 text-white shadow-lg' 
+                            : 'bg-slate-700 text-purple-300 hover:bg-slate-600'
+                        }`}
+                        title="Historial de Todas las Consultas"
+                      >
+                        <History className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={() => setView('admin')} 
+                        className={`px-4 py-2 rounded-lg transition-all ${
+                          view === 'admin' 
+                            ? 'bg-purple-600 text-white shadow-lg' 
+                            : 'bg-slate-700 text-purple-300 hover:bg-slate-600'
+                        }`}
+                        title="Panel de Administración"
+                      >
+                        <Settings className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
                 </nav>
               </div>
             </div>
@@ -2545,7 +2579,7 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
         <div className="max-w-7xl mx-auto px-4 py-8">
           {view === 'home' && renderHome()}
           {view === 'pricing' && renderPricing()}
-          {view === 'history' && renderHistory()}
+          {view === 'history' && isAdmin && renderHistory()}
           {view === 'admin' && renderAdmin()}
           {view === 'chat' && renderChat()}
         </div>
@@ -2643,4 +2677,3 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
     </>
   );
 }
-
