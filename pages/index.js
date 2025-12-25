@@ -1236,7 +1236,7 @@ const plans = [
 
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
-  'admin@cambiatuyo.com',
+  'admin@cambiatuyo.es',
   'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
@@ -2643,3 +2643,4 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
     </>
   );
 }
+
