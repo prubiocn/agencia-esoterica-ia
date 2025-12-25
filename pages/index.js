@@ -1236,7 +1236,7 @@ const plans = [
 
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
-  'admin@cambiatuyo.es',
+  'admin@cambiatuyo.com',
   'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
@@ -1281,6 +1281,140 @@ const exportEmailsToCSV = () => {
   document.body.removeChild(link);
   
   alert(`✅ ${emails.length} emails exportados exitosamente a CSV`);
+};
+
+// Función para exportar conversación actual a PDF
+const exportConversationToPDF = (agent, messages, userName = 'Usuario') => {
+  if (messages.length <= 1) {
+    alert('No hay conversación para exportar');
+    return;
+  }
+  
+  // Filtrar mensajes de bienvenida
+  const realMessages = messages.filter(m => !m.content.includes('🌟 Saludos, buscador de verdades'));
+  
+  if (realMessages.length === 0) {
+    alert('No hay mensajes para exportar');
+    return;
+  }
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Consulta con ${agent.name} - CambiaTuYo</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+          padding-bottom: 20px;
+          border-bottom: 3px solid #9333ea;
+        }
+        .header h1 {
+          color: #9333ea;
+          margin: 0;
+          font-size: 32px;
+        }
+        .header p {
+          color: #666;
+          margin: 5px 0;
+        }
+        .agent-info {
+          background: #ede9fe;
+          padding: 15px;
+          border-radius: 8px;
+          margin: 20px 0;
+          border-left: 4px solid #9333ea;
+        }
+        .message {
+          margin: 20px 0;
+          padding: 15px;
+          border-radius: 8px;
+        }
+        .user-message {
+          background: linear-gradient(to right, #9333ea, #ec4899);
+          color: white;
+          margin-left: 20%;
+        }
+        .assistant-message {
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          margin-right: 20%;
+        }
+        .message-label {
+          font-weight: bold;
+          margin-bottom: 8px;
+          font-size: 12px;
+          opacity: 0.8;
+        }
+        .message-content {
+          line-height: 1.6;
+          white-space: pre-wrap;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 2px solid #e5e7eb;
+          text-align: center;
+          color: #666;
+          font-size: 12px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>✨ CambiaTuYo</h1>
+        <p>Consulta Mística Personal</p>
+        <p><strong>${userName}</strong></p>
+        <p>Generado: ${new Date().toLocaleDateString('es-ES', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</p>
+      </div>
+      
+      <div class="agent-info">
+        <h3 style="margin: 0 0 5px 0; color: #9333ea;">🔮 ${agent.name}</h3>
+        <p style="margin: 0; color: #666; font-size: 14px;">${agent.specialty}</p>
+      </div>
+      
+      <h2 style="color: #9333ea; margin-top: 30px;">💬 Conversación</h2>
+      
+      ${realMessages.map(msg => `
+        <div class="${msg.role === 'user' ? 'user-message' : 'assistant-message'} message">
+          <div class="message-label">${msg.role === 'user' ? '👤 Tu consulta:' : '🔮 ' + agent.name + ':'}</div>
+          <div class="message-content">${msg.content}</div>
+        </div>
+      `).join('')}
+      
+      <div class="footer">
+        <p><strong>CambiaTuYo</strong> - Tu Portal Místico Digital</p>
+        <p>Consulta realizada con ${agent.name}</p>
+        <p>© ${new Date().getFullYear()} CambiaTuYo. Todos los derechos reservados.</p>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+  
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
 };
 
 // Función para exportar historial a PDF
@@ -2023,21 +2157,22 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
           </div>
         </div>
         
-        {/* Sección de Marketing */}
-        <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Marketing & Emails
-              </h3>
-              <p className="text-purple-300 text-sm mt-2">
-                Base de datos de usuarios registrados para campañas de email marketing
-              </p>
+        {/* Sección de Marketing - SOLO PARA SUPER ADMINS */}
+        {isAdmin && (
+          <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500 mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Marketing & Emails
+                </h3>
+                <p className="text-purple-300 text-sm mt-2">
+                  Base de datos de usuarios registrados para campañas de email marketing
+                </p>
+              </div>
             </div>
-          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-slate-700/50 rounded-lg p-4 border border-purple-500/30">
@@ -2109,14 +2244,16 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
             </div>
           </div>
         </div>
+        )}
         
-        {/* Lista de usuarios registrados */}
-        <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500">
-          <h3 className="text-xl font-bold text-white mb-4">📋 Usuarios Registrados</h3>
-          {totalEmails === 0 ? (
-            <p className="text-purple-300 text-center py-8">No hay usuarios registrados todavía</p>
-          ) : (
-            <div className="overflow-x-auto">
+        {/* Lista de usuarios registrados - SOLO PARA SUPER ADMINS */}
+        {isAdmin && (
+          <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500">
+            <h3 className="text-xl font-bold text-white mb-4">📋 Usuarios Registrados</h3>
+            {totalEmails === 0 ? (
+              <p className="text-purple-300 text-center py-8">No hay usuarios registrados todavía</p>
+            ) : (
+              <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-purple-500/30">
@@ -2156,6 +2293,19 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
             </div>
           )}
         </div>
+        )}
+        
+        {/* Mensaje para usuarios no-admin */}
+        {!isAdmin && (
+          <div className="bg-slate-800 rounded-xl p-12 text-center border-2 border-purple-500/50">
+            <svg className="w-20 h-20 text-purple-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <h3 className="text-xl font-semibold text-white mb-2">Panel de Administración</h3>
+            <p className="text-purple-300">Esta sección está disponible solo para Super Administradores.</p>
+            <p className="text-purple-400 text-sm mt-2">Si necesitas acceso, contacta al administrador del sistema.</p>
+          </div>
+        )}
       </div>
     );
   };
@@ -2166,10 +2316,23 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
         <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500 sticky top-4">
           <button 
             onClick={() => { setSelectedAgent(null); setMessages([]); setView('home'); setShowSuggestions(true); }} 
-            className="w-full mb-6 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="w-full mb-4 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             ← Volver al inicio
           </button>
+          
+          {/* Botón para exportar conversación */}
+          {messages.length > 1 && (
+            <button 
+              onClick={() => exportConversationToPDF(selectedAgent, messages, currentUser?.name)}
+              className="w-full mb-6 px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Exportar Conversación
+            </button>
+          )}
           
           <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br ${selectedAgent.color} flex items-center justify-center shadow-lg`}>
             {React.createElement(selectedAgent.icon, { className: "w-10 h-10 text-white" })}
@@ -2480,4 +2643,3 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
     </>
   );
 }
-
