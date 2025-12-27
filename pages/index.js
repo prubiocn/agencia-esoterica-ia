@@ -1237,7 +1237,7 @@ const plans = [
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
   'admin@cambiatuyo.es',
-  'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
+  'admin@cambiatuyo.com',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
 
@@ -1591,11 +1591,18 @@ export default function Home() {
   const [consultationHistory, setConsultationHistory] = useState([]);
   const [expandedAgent, setExpandedAgent] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [registeredUsers, setRegisteredUsers] = useState({});
   const [adminStats] = useState({
     totalUsers: 1247,
     activeSubscriptions: 342,
     monthlyRevenue: 4580
   });
+
+  // Función para recargar usuarios desde localStorage
+  const reloadUsers = () => {
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    setRegisteredUsers(users);
+  };
 
   // Verificar sesión al cargar
   React.useEffect(() => {
@@ -1612,6 +1619,9 @@ export default function Home() {
       setUserCredits(adminStatus ? 999999 : (userData.credits || 30));
       setUserPlan(adminStatus ? 'admin' : (userData.plan || 'free'));
     }
+    
+    // Cargar usuarios registrados
+    reloadUsers();
   }, []);
 
   const handleLogin = (e) => {
@@ -1673,6 +1683,9 @@ export default function Home() {
     users[authForm.email] = userData;
     localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
     
+    // Recargar lista de usuarios
+    reloadUsers();
+    
     const currentUserData = {
       email: userData.email,
       name: userData.name,
@@ -1706,6 +1719,70 @@ export default function Home() {
     setUserPlan('free');
     setView('home');
     alert('👋 Has cerrado sesión');
+  };
+
+  const handleDeleteUser = (email) => {
+    if (!isAdmin) {
+      alert('⛔ Solo Super Admins pueden eliminar usuarios');
+      return;
+    }
+    
+    // No permitir que el admin se elimine a sí mismo
+    if (email === currentUser?.email) {
+      alert('⚠️ No puedes eliminar tu propia cuenta de administrador');
+      return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    const userName = users[email]?.name || email;
+    
+    if (confirm(`🗑️ ¿Estás seguro de eliminar al usuario?\n\nEmail: ${email}\nNombre: ${userName}\n\n⚠️ Esta acción no se puede deshacer.`)) {
+      delete users[email];
+      localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      
+      // Recargar lista de usuarios
+      reloadUsers();
+      
+      alert(`✅ Usuario eliminado: ${userName}`);
+    }
+  };
+
+  const handleDeleteAllTestUsers = () => {
+    if (!isAdmin) {
+      alert('⛔ Solo Super Admins pueden eliminar usuarios');
+      return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    
+    // Identificar usuarios de prueba (puedes personalizar estos criterios)
+    const testEmails = Object.keys(users).filter(email => 
+      email.includes('test') || 
+      email.includes('prueba') || 
+      email.includes('demo') ||
+      email.includes('@test.') ||
+      email.includes('@prueba.')
+    );
+    
+    // No incluir al admin actual
+    const testEmailsToDelete = testEmails.filter(email => email !== currentUser?.email);
+    
+    if (testEmailsToDelete.length === 0) {
+      alert('ℹ️ No se encontraron usuarios de prueba para eliminar.');
+      return;
+    }
+    
+    if (confirm(`🗑️ ¿Eliminar ${testEmailsToDelete.length} usuarios de prueba?\n\nSe eliminarán cuentas que contengan:\n- "test", "prueba", "demo"\n- Dominios de prueba\n\n⚠️ Esta acción no se puede deshacer.\n\nUsuarios a eliminar:\n${testEmailsToDelete.slice(0, 5).join('\n')}${testEmailsToDelete.length > 5 ? `\n... y ${testEmailsToDelete.length - 5} más` : ''}`)) {
+      
+      testEmailsToDelete.forEach(email => {
+        delete users[email];
+      });
+      
+      localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      reloadUsers();
+      
+      alert(`✅ Eliminados ${testEmailsToDelete.length} usuarios de prueba`);
+    }
   };
 
   const handleAgentClick = (agent) => {
@@ -2141,8 +2218,14 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
   );
 
   const renderAdmin = () => {
-    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
-    const totalEmails = Object.keys(users).length;
+    // Recargar usuarios cada vez que se muestra el panel admin
+    React.useEffect(() => {
+      if (view === 'admin' && isAdmin) {
+        reloadUsers();
+      }
+    }, [view]);
+    
+    const totalEmails = Object.keys(registeredUsers).length;
     
     return (
       <div>
@@ -2259,7 +2342,20 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
         {/* Lista de usuarios registrados - SOLO PARA SUPER ADMINS */}
         {isAdmin && (
           <div className="bg-slate-800 rounded-xl p-6 border-2 border-purple-500">
-            <h3 className="text-xl font-bold text-white mb-4">📋 Usuarios Registrados</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">📋 Usuarios Registrados</h3>
+              {totalEmails > 0 && (
+                <button
+                  onClick={handleDeleteAllTestUsers}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Eliminar Usuarios de Prueba
+                </button>
+              )}
+            </div>
             {totalEmails === 0 ? (
               <p className="text-purple-300 text-center py-8">No hay usuarios registrados todavía</p>
             ) : (
@@ -2272,10 +2368,11 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
                     <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Plan</th>
                     <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Créditos</th>
                     <th className="text-left text-purple-300 text-sm font-semibold py-3 px-4">Registro</th>
+                    <th className="text-center text-purple-300 text-sm font-semibold py-3 px-4">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.values(users).map((user, idx) => (
+                  {Object.values(registeredUsers).map((user, idx) => (
                     <tr key={idx} className="border-b border-purple-500/10 hover:bg-slate-700/50">
                       <td className="py-3 px-4 text-white text-sm">{user.email}</td>
                       <td className="py-3 px-4 text-purple-200 text-sm">{user.name}</td>
@@ -2295,6 +2392,20 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
                       </td>
                       <td className="py-3 px-4 text-purple-300 text-xs">
                         {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('es-ES') : 'N/A'}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => handleDeleteUser(user.email)}
+                          disabled={user.email === currentUser?.email}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                            user.email === currentUser?.email
+                              ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                              : 'bg-red-600 hover:bg-red-700 text-white'
+                          }`}
+                          title={user.email === currentUser?.email ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
+                        >
+                          {user.email === currentUser?.email ? '🔒 Tú' : '🗑️ Eliminar'}
+                        </button>
                       </td>
                     </tr>
                   ))}
