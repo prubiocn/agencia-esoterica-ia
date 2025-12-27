@@ -1236,8 +1236,8 @@ const plans = [
 
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
-  'admin@cambiatuyo.com',
-  'admin@cambiatuyo.Es',  // 👈 CAMBIA ESTO POR TU EMAIL
+  'admin@cambiatuyo.es',
+  'tu@email.com',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
 
@@ -1623,6 +1623,13 @@ export default function Home() {
     // Cargar usuarios registrados
     reloadUsers();
   }, []);
+
+  // Recargar usuarios cuando se cambia a vista de admin
+  React.useEffect(() => {
+    if (view === 'admin' && isAdmin) {
+      reloadUsers();
+    }
+  }, [view, isAdmin]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -2291,13 +2298,6 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
   );
 
   const renderAdmin = () => {
-    // Recargar usuarios cada vez que se muestra el panel admin
-    React.useEffect(() => {
-      if (view === 'admin' && isAdmin) {
-        reloadUsers();
-      }
-    }, [view]);
-    
     const totalEmails = Object.keys(registeredUsers).length;
     
     return (
