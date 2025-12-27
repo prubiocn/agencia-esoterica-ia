@@ -1592,11 +1592,34 @@ export default function Home() {
   const [expandedAgent, setExpandedAgent] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [registeredUsers, setRegisteredUsers] = useState({});
-  const [adminStats] = useState({
-    totalUsers: 1247,
-    activeSubscriptions: 342,
-    monthlyRevenue: 4580
-  });
+
+  // Calcular estadísticas dinámicamente
+  const getAdminStats = () => {
+    const users = Object.values(registeredUsers);
+    const totalUsers = users.length;
+    
+    // Contar suscripciones activas (usuarios con plan de pago)
+    const activeSubscriptions = users.filter(user => 
+      user.plan === 'basic' || user.plan === 'mystic' || user.plan === 'master'
+    ).length;
+    
+    // Calcular ingresos mensuales basándose en los planes
+    const planPrices = {
+      'basic': 9.99,
+      'mystic': 19.99,
+      'master': 29.99
+    };
+    
+    const monthlyRevenue = users.reduce((total, user) => {
+      return total + (planPrices[user.plan] || 0);
+    }, 0);
+    
+    return {
+      totalUsers,
+      activeSubscriptions,
+      monthlyRevenue
+    };
+  };
 
   // Función para recargar usuarios desde localStorage
   const reloadUsers = () => {
@@ -2299,6 +2322,7 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
 
   const renderAdmin = () => {
     const totalEmails = Object.keys(registeredUsers).length;
+    const stats = getAdminStats();
     
     return (
       <div>
@@ -2309,17 +2333,17 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
           <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 shadow-lg">
             <Users className="w-10 h-10 text-white mb-3" />
             <p className="text-blue-100 text-sm font-medium mb-1">Total Usuarios</p>
-            <p className="text-4xl font-bold text-white">{totalEmails.toLocaleString()}</p>
+            <p className="text-4xl font-bold text-white">{stats.totalUsers}</p>
           </div>
           <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 shadow-lg">
             <TrendingUp className="w-10 h-10 text-white mb-3" />
             <p className="text-purple-100 text-sm font-medium mb-1">Suscripciones Activas</p>
-            <p className="text-4xl font-bold text-white">{adminStats.activeSubscriptions}</p>
+            <p className="text-4xl font-bold text-white">{stats.activeSubscriptions}</p>
           </div>
           <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl p-6 shadow-lg">
             <DollarSign className="w-10 h-10 text-white mb-3" />
             <p className="text-emerald-100 text-sm font-medium mb-1">Ingresos Mensuales</p>
-            <p className="text-4xl font-bold text-white">€{adminStats.monthlyRevenue.toLocaleString()}</p>
+            <p className="text-4xl font-bold text-white">€{stats.monthlyRevenue.toFixed(2)}</p>
           </div>
         </div>
         
