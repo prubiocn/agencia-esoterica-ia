@@ -1236,8 +1236,8 @@ const plans = [
 
 // SUPER ADMINS - Emails con acceso ilimitado
 const SUPER_ADMINS = [
-  'admin@cambiatuyo.es',
-  'admin@cambiatuyo.com',  // 👈 CAMBIA ESTO POR TU EMAIL
+  'admin@cambiatuyo.com',
+  'admin@cambiatuyo.Es',  // 👈 CAMBIA ESTO POR TU EMAIL
   // Agrega más emails de administradores aquí
 ];
 
@@ -1782,6 +1782,79 @@ export default function Home() {
       reloadUsers();
       
       alert(`✅ Eliminados ${testEmailsToDelete.length} usuarios de prueba`);
+    }
+  };
+
+  const handleAddCredits = (email) => {
+    if (!isAdmin) {
+      alert('⛔ Solo Super Admins pueden otorgar créditos');
+      return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('cambiaTuyoUsers') || '{}');
+    const user = users[email];
+    
+    if (!user) {
+      alert('❌ Usuario no encontrado');
+      return;
+    }
+    
+    // No permitir otorgar créditos a admins (ya tienen ilimitados)
+    if (user.plan === 'admin') {
+      alert('ℹ️ Los Super Admins ya tienen créditos ilimitados (∞)');
+      return;
+    }
+    
+    const creditsToAdd = prompt(
+      `💰 Otorgar créditos a ${user.name}\n\n` +
+      `Email: ${email}\n` +
+      `Créditos actuales: ${user.credits || 0}\n\n` +
+      `¿Cuántos créditos quieres otorgar?`,
+      '50'
+    );
+    
+    if (creditsToAdd === null) return; // Canceló
+    
+    const credits = parseInt(creditsToAdd);
+    
+    if (isNaN(credits) || credits <= 0) {
+      alert('⚠️ Debes ingresar un número válido mayor a 0');
+      return;
+    }
+    
+    if (credits > 10000) {
+      alert('⚠️ Máximo 10,000 créditos por operación');
+      return;
+    }
+    
+    // Confirmar
+    const currentCredits = user.credits || 0;
+    const newCredits = currentCredits + credits;
+    
+    if (confirm(`✅ ¿Confirmar otorgar ${credits} créditos?\n\n` +
+                `Usuario: ${user.name} (${email})\n` +
+                `Créditos actuales: ${currentCredits}\n` +
+                `Créditos nuevos: ${newCredits}\n` +
+                `(+${credits} créditos)`)) {
+      
+      // Actualizar en base de usuarios
+      user.credits = newCredits;
+      users[email] = user;
+      localStorage.setItem('cambiaTuyoUsers', JSON.stringify(users));
+      
+      // Si es el usuario actualmente logueado, actualizar también su sesión
+      if (currentUser?.email === email) {
+        const updatedCurrentUser = { ...currentUser, credits: newCredits };
+        setCurrentUser(updatedCurrentUser);
+        setUserCredits(newCredits);
+        localStorage.setItem('cambiaTuyoUser', JSON.stringify(updatedCurrentUser));
+      }
+      
+      // Recargar lista de usuarios
+      reloadUsers();
+      
+      alert(`✅ ${credits} créditos otorgados exitosamente\n\n` +
+            `${user.name} ahora tiene ${newCredits} créditos`);
     }
   };
 
@@ -2393,19 +2466,33 @@ ${isAdmin ? '👑 Como Super Admin, esta consulta es COMPLETAMENTE GRATIS (acces
                       <td className="py-3 px-4 text-purple-300 text-xs">
                         {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('es-ES') : 'N/A'}
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => handleDeleteUser(user.email)}
-                          disabled={user.email === currentUser?.email}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                            user.email === currentUser?.email
-                              ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                              : 'bg-red-600 hover:bg-red-700 text-white'
-                          }`}
-                          title={user.email === currentUser?.email ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
-                        >
-                          {user.email === currentUser?.email ? '🔒 Tú' : '🗑️ Eliminar'}
-                        </button>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleAddCredits(user.email)}
+                            disabled={user.plan === 'admin'}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                              user.plan === 'admin'
+                                ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                                : 'bg-green-600 hover:bg-green-700 text-white'
+                            }`}
+                            title={user.plan === 'admin' ? 'Los admins tienen créditos ilimitados' : 'Otorgar créditos'}
+                          >
+                            💰 Créditos
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user.email)}
+                            disabled={user.email === currentUser?.email}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                              user.email === currentUser?.email
+                                ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                                : 'bg-red-600 hover:bg-red-700 text-white'
+                            }`}
+                            title={user.email === currentUser?.email ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
+                          >
+                            {user.email === currentUser?.email ? '🔒 Tú' : '🗑️'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
